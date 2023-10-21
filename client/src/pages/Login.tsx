@@ -1,10 +1,11 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import Field from "../components/Field";
 import Button from "../components/Button";
 import { BsBoxArrowInRight, BsEyeFill, BsPersonCircle } from "react-icons/bs";
 import notify from "../util/notify";
 
-interface AdminLoginCredentials {
+interface LoginCredentials {
   username: string;
   password: string;
 }
@@ -17,7 +18,7 @@ const Login: React.FC = () => {
   };
 
   // Credentials
-  const [credentials, setCredentials] = useState<AdminLoginCredentials>({
+  const [credentials, setCredentials] = useState<LoginCredentials>({
     username: "",
     password: "",
   });
@@ -79,15 +80,10 @@ const Login: React.FC = () => {
           onChange={handleUpdateCredentials}
           changeShowPassword={handleShowPassword}
         />
-        <Button
-          icon={BsBoxArrowInRight}
-          text="Sign In"
-          solid={false}
-          fn={handleSubmit}
-        />
-        <span className="underline cursor-pointer">
-          Don't have an account? Create one.
-        </span>
+        <Button icon={BsBoxArrowInRight} text="Sign In" fn={handleSubmit} />
+        <Link to="/register" className="underline cursor-pointer">
+          Don't have an account? Sign Up.
+        </Link>
       </div>
     </div>
   );

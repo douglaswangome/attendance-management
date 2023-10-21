@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IconType } from "react-icons";
 
 interface FieldProps {
@@ -7,12 +7,21 @@ interface FieldProps {
   name: string;
   type: string;
   value: string;
-  onChange(event: React.ChangeEvent<HTMLInputElement>): void;
+  onChange?(event: React.ChangeEvent<HTMLInputElement>): void;
   changeShowPassword?(): void;
+  readOnly?: boolean;
+  parentOnBlur?(): void;
+  placeholder?: string;
 }
 
-const Field: React.FC<FieldProps> = (props) => {
-  const [isFocused, setIsFocused] = useState<boolean>(false);
+const Field: React.FC<FieldProps> = ({
+  onChange = null,
+  readOnly = false,
+  parentOnBlur = null,
+  placeholder = "",
+  ...props
+}) => {
+  const [isFocused, setIsFocused] = useState<boolean>(readOnly);
   const handleFocus = () => {
     setIsFocused(true);
   };
@@ -24,11 +33,18 @@ const Field: React.FC<FieldProps> = (props) => {
     }
   };
 
+  useEffect(() => {
+    if (!readOnly && props.value) {
+      setIsFocused(true);
+    }
+  }, [props.value]);
+
   return (
     <div
       className={`relative flex items-end h-[38px] focus-within:h-[68px] ${
-        props.value && "h-[68px]"
-      } transition-all duration-300 ease-in-out`}
+        readOnly && "h-[68px]"
+      } ${props.value && "h-[68px]"} transition-all duration-300 ease-in-out`}
+      onBlur={parentOnBlur === null ? () => {} : parentOnBlur}
     >
       <div
         className={`absolute top-[50%] flex items-center gap-1 capitalize ${
@@ -46,15 +62,21 @@ const Field: React.FC<FieldProps> = (props) => {
         )}
         <label htmlFor={props.name}>{props.label}</label>
       </div>
-      <input
-        className="w-full px-2 py-1 bg-transparent border border-black rounded-lg group focus:outline-none"
-        name={props.name}
-        value={props.value}
-        onChange={props.onChange}
-        type={props.type}
-        onFocus={handleFocus}
-        onBlur={handleBlurFocus}
-      />
+      <div className="relative flex items-center w-full">
+        <input
+          className={`w-full px-2 py-1 bg-transparent border border-black rounded-lg group focus:outline-none ${
+            readOnly && "cursor-not-allowed"
+          }`}
+          name={props.name}
+          value={props.value}
+          onChange={onChange === null ? () => {} : onChange}
+          type={props.type}
+          onFocus={readOnly ? () => {} : handleFocus}
+          onBlur={readOnly ? () => {} : handleBlurFocus}
+          readOnly={readOnly}
+          placeholder={placeholder}
+        />
+      </div>
     </div>
   );
 };
