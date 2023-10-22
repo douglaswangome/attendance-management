@@ -64,7 +64,7 @@ const Field: React.FC<FieldProps> = ({
       </div>
       <div className="relative flex items-center w-full">
         <input
-          className={`w-full px-2 py-1 bg-transparent border border-black rounded-lg group focus:outline-none ${
+          className={`w-full px-2 py-1 bg-transparent border border-black dark:border-less-dark rounded-lg group focus:outline-none ${
             readOnly && "cursor-not-allowed"
           }`}
           name={props.name}

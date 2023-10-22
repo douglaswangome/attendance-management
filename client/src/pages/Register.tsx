@@ -117,7 +117,7 @@ const Register: React.FC = () => {
   }, [credentials.password, confirmPassword]);
 
   return (
-    <div className="gap-2 p-4 border border-black rounded-lg">
+    <div className="p-4 mx-2 border border-black rounded-lg dark:border-lesser-dark">
       <span className="font-bold">Register to Machakos Attendance Portal</span>
       <div className="flex flex-col gap-2">
         <Field
@@ -203,7 +203,6 @@ const Register: React.FC = () => {
               </div>
             ))}
         </div>
-
         <Button
           icon={BsBoxArrowInRight}
           text="Sign Up"

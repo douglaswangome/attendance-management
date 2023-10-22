@@ -47,22 +47,17 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center w-[90%] p-2 max-[750px]:flex-col">
-      <img
-        className="object-contain w-1/2 max-[750px]:w-full"
-        src="/images/classroom.png"
-        alt="classroom"
-      />
-      <div className="flex flex-col w-1/2 gap-2 max-[750px]:w-full">
-        <span className="font-bold">
-          Login to Machakos Attendance Portal | {isAdmin ? "Admin" : "Student"}
+    <div className="flex flex-col gap-2 p-4 mx-2 border border-black rounded-lg dark:border-lesser-dark">
+      <span className="font-bold">
+        Login to Machakos Attendance Portal | {isAdmin ? "Admin" : "Student"}
+      </span>
+      <div className="flex gap-1">
+        <span className="underline cursor-pointer" onClick={handleIsAdmin}>
+          Click
         </span>
-        <div className="flex gap-1">
-          <span className="underline cursor-pointer" onClick={handleIsAdmin}>
-            Click
-          </span>
-          <span>to change role</span>
-        </div>
+        <span>to change role</span>
+      </div>
+      <div className="flex flex-col gap-2">
         <Field
           label="username"
           icon={BsPersonCircle}

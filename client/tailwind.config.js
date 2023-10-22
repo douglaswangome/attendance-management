@@ -8,7 +8,11 @@ export default {
         // Primary
         primary: "#407BFF",
         // Light
+
         // Dark
+        dark: "#212121",
+        "less-dark": "#424242",
+        "lesser-dark": "#727272",
       },
     },
   },
