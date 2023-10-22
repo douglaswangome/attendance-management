@@ -7,6 +7,7 @@ import Header from "./components/Header";
 
 const App: React.FC = () => {
   const [page, setPage] = useState<string>("home");
+
   useEffect(() => {
     // Theme Handling
     const hour = moment().hour();
@@ -25,13 +26,14 @@ const App: React.FC = () => {
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <div className="dark:bg-dark dark:text-[#fafafa]">
-        <Header page="authentication" />
-        <div className="flex items-center justify-center flex-shrink-0 w-screen h-[calc(100vh-70px)] overflow-y-scroll ">
-          <Toaster toastOptions={{ duration: 2000 }} />
-          <RouterProvider router={routes} />
-        </div>
-      </div>
+      <Toaster
+        toastOptions={{
+          className:
+            "dark:bg-dark dark:text-white shadow-round dark:shadow-lesser-dark",
+          duration: 2000,
+        }}
+      />
+      <RouterProvider router={routes} />
     </Suspense>
   );
 };

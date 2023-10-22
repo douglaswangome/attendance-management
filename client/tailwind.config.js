@@ -4,6 +4,9 @@ export default {
   darkMode: "class",
   theme: {
     extend: {
+      boxShadow: {
+        round: "0 0 12px ",
+      },
       colors: {
         // Primary
         primary: "#407BFF",

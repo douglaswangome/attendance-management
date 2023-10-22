@@ -2,7 +2,9 @@ import React from "react";
 import { BsMoon, BsSunFill } from "react-icons/bs";
 
 const ThemeToggle: React.FC = () => {
-  const [theme, setTheme] = React.useState<"light" | "dark">("dark");
+  const [theme, setTheme] = React.useState<"light" | "dark">(
+    (localStorage.getItem("theme") as "light" | "dark") || "light"
+  );
 
   const changeTheme = () => {
     if (theme === "dark") {
