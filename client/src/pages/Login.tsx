@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Field from "../components/Field";
 import Button from "../components/Button";
 import { BsBoxArrowInRight, BsEyeFill, BsPersonCircle } from "react-icons/bs";
@@ -11,6 +11,7 @@ interface LoginCredentials {
 }
 
 const Login: React.FC = () => {
+  const navigate = useNavigate();
   // Is Admin Flag
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const handleIsAdmin = () => {
@@ -44,6 +45,7 @@ const Login: React.FC = () => {
       // Student Login
       notify(200, "Student Login Successful");
     }
+    navigate("/home");
   };
 
   return (

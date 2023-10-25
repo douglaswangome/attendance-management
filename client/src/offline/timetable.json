@@ -1,0 +1,88 @@
+{
+  "timetable": [
+    {
+      "unit": "programming languages",
+      "code": "sco 306",
+      "date": { "start": 202310231300, "end": 202310231600 },
+      "lecturer": "Ms. Mercy",
+      "class": "j17-2021"
+    },
+    {
+      "unit": "software project management",
+      "code": "sco 302",
+      "date": { "start": 202310241600, "end": 202310241900 },
+      "lecturer": "Mr. Omuya",
+      "class": "j17-2021"
+    },
+    {
+      "unit": "component programming",
+      "code": "sco 310",
+      "date": { "start": 202310251000, "end": 202310251300 },
+      "lecturer": "Mr. George",
+      "class": "j17-2021"
+    },
+    {
+      "unit": "advanced database systems",
+      "code": "sco 302",
+      "date": { "start": 202310251300, "end": 202310251600 },
+      "lecturer": "Mr. Mathenge",
+      "class": "j17-2021"
+    },
+    {
+      "unit": "design & analysis of algorithms",
+      "code": "sco 308",
+      "date": { "start": 202310260700, "end": 202310261000 },
+      "lecturer": "Mr. Kimeu",
+      "class": "j17-2021"
+    },
+    {
+      "unit": "computer networks",
+      "code": "sco 300",
+      "date": { "start": 202310261000, "end": 202310261300 },
+      "lecturer": "Ms. Veronica",
+      "class": "j17-2021"
+    },
+    {
+      "unit": "programming languages",
+      "code": "sco 306",
+      "date": { "start": 202310301300, "end": 202310301600 },
+      "lecturer": "Ms. Mercy",
+      "class": "j17-2021"
+    },
+    {
+      "unit": "software project management",
+      "code": "sco 302",
+      "date": { "start": 202310311600, "end": 202310311900 },
+      "lecturer": "Mr. Omuya",
+      "class": "j17-2021"
+    },
+    {
+      "unit": "component programming",
+      "code": "sco 310",
+      "date": { "start": 202311011000, "end": 202311011300 },
+      "lecturer": "Mr. George",
+      "class": "j17-2021"
+    },
+    {
+      "unit": "advanced database systems",
+      "code": "sco 302",
+      "date": { "start": 202311011300, "end": 202311011600 },
+      "lecturer": "Mr. Mathenge",
+      "class": "j17-2021"
+    },
+    {
+      "unit": "design & analysis of algorithms",
+      "code": "sco 308",
+      "date": { "start": 202311020700, "end": 202311021000 },
+      "lecturer": "Mr. Kimeu",
+      "class": "j17-2021"
+    },
+    {
+      "unit": "computer networks",
+      "code": "sco 300",
+      "date": { "start": 202311021000, "end": 202311021300 },
+      "lecturer": "Ms. Veronica",
+      "class": "j17-2021"
+    }
+  ]
+}
