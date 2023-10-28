@@ -23,7 +23,7 @@ const Header: React.FC<HeaderProps> = ({ page = "home" }) => {
             />
             <div className="flex flex-col uppercase">
               <span className="font-bold">machakos university</span>
-              <span className="text-[10px]">class attendance | student</span>
+              <span className="text-[10px]">class attendance | lecturer</span>
             </div>
           </Link>
           <div>

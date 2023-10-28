@@ -37,7 +37,10 @@ const routes = createBrowserRouter([
       { path: "/register", element: <UserRegister /> },
     ],
   },
-  { element: <MainLayout />, children: [{ path: "/home", element: <Home /> }] },
+  {
+    element: <MainLayout />,
+    children: [{ path: "/home", element: <Home /> }],
+  },
 ]);
 
 export default routes;

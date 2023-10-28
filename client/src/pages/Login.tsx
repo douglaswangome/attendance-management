@@ -13,7 +13,7 @@ interface LoginCredentials {
 const Login: React.FC = () => {
   const navigate = useNavigate();
   // Is Admin Flag
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [isAdmin, setIsAdmin] = useState<boolean>(true);
   const handleIsAdmin = () => {
     setIsAdmin(!isAdmin);
   };

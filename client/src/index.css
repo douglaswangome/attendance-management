@@ -129,7 +129,11 @@
 }
 
 .rbc-event {
-  margin: 0 4px !important;
+  width: 100% !important;
+}
+
+.rbc-events-container {
+  margin: 0 !important;
 }
 
 .rbc-event .rbc-event-content {
