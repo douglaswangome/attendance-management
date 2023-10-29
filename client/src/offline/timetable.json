@@ -5,6 +5,7 @@
       "code": "sco 306",
       "date": { "start": 202310231300, "end": 202310231600 },
       "lecturer": "Ms. Mercy",
+      "room": "general lab",
       "class": "j17-2021"
     },
     {
@@ -12,6 +13,7 @@
       "code": "sco 302",
       "date": { "start": 202310241600, "end": 202310241900 },
       "lecturer": "Mr. Omuya",
+      "room": "general lab",
       "class": "j17-2021"
     },
     {
@@ -19,6 +21,7 @@
       "code": "sco 310",
       "date": { "start": 202310251000, "end": 202310251300 },
       "lecturer": "Mr. George",
+      "room": "general lab",
       "class": "j17-2021"
     },
     {
@@ -26,6 +29,7 @@
       "code": "sco 302",
       "date": { "start": 202310251300, "end": 202310251600 },
       "lecturer": "Mr. Mathenge",
+      "room": "general lab",
       "class": "j17-2021"
     },
     {
@@ -33,6 +37,7 @@
       "code": "sco 308",
       "date": { "start": 202310260700, "end": 202310261000 },
       "lecturer": "Mr. Kimeu",
+      "room": "general lab",
       "class": "j17-2021"
     },
     {
@@ -40,6 +45,7 @@
       "code": "sco 300",
       "date": { "start": 202310261000, "end": 202310261300 },
       "lecturer": "Ms. Veronica",
+      "room": "general lab",
       "class": "j17-2021"
     },
     {
@@ -47,6 +53,7 @@
       "code": "sco 306",
       "date": { "start": 202310301300, "end": 202310301600 },
       "lecturer": "Ms. Mercy",
+      "room": "general lab",
       "class": "j17-2021"
     },
     {
@@ -54,6 +61,7 @@
       "code": "sco 302",
       "date": { "start": 202310311600, "end": 202310311900 },
       "lecturer": "Mr. Omuya",
+      "room": "general lab",
       "class": "j17-2021"
     },
     {
@@ -61,6 +69,7 @@
       "code": "sco 310",
       "date": { "start": 202311011000, "end": 202311011300 },
       "lecturer": "Mr. George",
+      "room": "general lab",
       "class": "j17-2021"
     },
     {
@@ -68,6 +77,7 @@
       "code": "sco 302",
       "date": { "start": 202311011300, "end": 202311011600 },
       "lecturer": "Mr. Mathenge",
+      "room": "general lab",
       "class": "j17-2021"
     },
     {
@@ -75,6 +85,7 @@
       "code": "sco 308",
       "date": { "start": 202311020700, "end": 202311021000 },
       "lecturer": "Mr. Kimeu",
+      "room": "general lab",
       "class": "j17-2021"
     },
     {
@@ -82,6 +93,15 @@
       "code": "sco 300",
       "date": { "start": 202311021000, "end": 202311021300 },
       "lecturer": "Ms. Veronica",
+      "room": "general lab",
+      "class": "j17-2021"
+    },
+    {
+      "unit": "computer networks",
+      "code": "sco 300",
+      "date": { "start": 202310291200, "end": 202310292400 },
+      "lecturer": "Ms. Veronica",
+      "room": "general lab",
       "class": "j17-2021"
     }
   ]

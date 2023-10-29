@@ -5,14 +5,18 @@ import { useNavigate } from "react-router-dom";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { timetable } from "../offline/timetable.json";
 import notify from "../util/notify";
+import { useDispatch } from "react-redux";
+import { updateClass } from "../store/slice";
 
 interface Event {
+  id: number;
   title: string;
   start: Date;
   end: Date;
 }
 
 const MCalendar: React.FC = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const localizer = momentLocalizer(moment);
   const [events, setEvents] = useState<Event[]>([]);
@@ -40,22 +44,21 @@ const MCalendar: React.FC = () => {
       notify(500, `Class ended ${difference} ago`);
     } else if (moment().isBetween(event.start, event.end)) {
       notify("", "Class is ongoing");
-      const unit: string = event.title
-        .split(" - ")[0]
-        .split(" (")[1]
-        .split(")")[0]
-        .split(" ")
-        .join("")
-        .toLowerCase();
-      const today = moment().format("YYYYMMDD");
-      navigate(`/class/${unit}/${today}`);
+      dispatch(updateClass(timetable[event.id]));
+      navigate(
+        `/class/${timetable[event.id].code.replace(" ", "")}/${moment().format(
+          "YYYYMMDD"
+        )}`
+      );
     }
+    console.log(timetable[event.id]);
   };
 
   useEffect(() => {
     // Edit the timetable - add color, room
-    const e = timetable.map((event) => {
+    const e = timetable.map((event, index) => {
       return {
+        id: index,
         title: `${event.unit} (${event.code}) - ${event.lecturer} @ general lab`,
         start: moment(event.date.start, "YYYYMMDDHHmm").toDate(),
         end: moment(event.date.end, "YYYYMMDDHHmm").toDate(),
@@ -67,14 +70,7 @@ const MCalendar: React.FC = () => {
   return (
     <div className="h-[calc(100vh-80px)] w-[90vw]">
       <Calendar
-        events={[
-          ...events,
-          {
-            title: "programming languages (sco 306) - Ms. Mercy @ general lab",
-            start: moment({ hour: 17 }).toDate(),
-            end: moment({ hour: 21 }).toDate(),
-          },
-        ]}
+        events={events}
         localizer={localizer}
         style={{ height: "100%", width: "100%" }}
         onSelectEvent={(event) => handleOnSelectEvent(event)}

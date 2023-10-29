@@ -1,27 +1,63 @@
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useEffect } from "react";
 import { RouterProvider } from "react-router-dom";
 import routes from "./routes/routes";
 import { Toaster } from "react-hot-toast";
-import moment from "moment";
-import Header from "./components/Header";
+import moment from "moment/moment";
+import { useDispatch } from "react-redux";
+import { updateLocation } from "./store/slice";
+import notify from "./util/notify";
 
 const App: React.FC = () => {
-  const [page, setPage] = useState<string>("home");
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    // Theme Handling
-    const hour = moment().hour();
-    if (hour < 6 || hour > 18) {
-      localStorage.setItem("theme", "dark");
-    } else {
-      localStorage.setItem("theme", "light");
-    }
+    const handleLocation = () => {
+      // Location Handling
+      const success = (position: GeolocationPosition) => {
+        const { latitude, longitude } = position.coords;
+        dispatch(updateLocation({ lat: latitude, lon: longitude }));
+      };
+      const error = (error: GeolocationPositionError) => {
+        notify(500, "Failed to fetch location");
+        console.log(error);
+      };
+      const options = {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0,
+      };
 
-    if (localStorage.getItem("theme") === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+      if (navigator.geolocation) {
+        navigator.permissions.query({ name: "geolocation" }).then((result) => {
+          if (result.state === "granted" || result.state === "prompt") {
+            navigator.geolocation.getCurrentPosition(success, error, options);
+          } else {
+            notify(500, "Please enable location to get your attendance");
+          }
+        });
+      }
+    };
+
+    const handleTheme = () => {
+      // Theme Handling
+      if (!localStorage.getItem("theme")) {
+        const hour = moment().hour();
+        if (hour < 6 || hour > 18) {
+          localStorage.setItem("theme", "dark");
+        } else {
+          localStorage.setItem("theme", "light");
+        }
+      }
+
+      if (localStorage.getItem("theme") === "dark") {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    };
+
+    handleLocation();
+    handleTheme();
   }, []);
 
   return (

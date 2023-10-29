@@ -1,12 +1,16 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import ThemeToggle from "./ThemeToggle";
+import { useSelector } from "react-redux";
+import { InitialState } from "../store/slice";
 
 interface HeaderProps {
   page: "authentication" | "home";
 }
 
 const Header: React.FC<HeaderProps> = ({ page = "home" }) => {
+  const { user } = useSelector((state: { slice: InitialState }) => state.slice);
+
   return (
     <div
       className={`flex items-center bg-transparent w-full h-[70px] px-2 ${
@@ -23,7 +27,9 @@ const Header: React.FC<HeaderProps> = ({ page = "home" }) => {
             />
             <div className="flex flex-col uppercase">
               <span className="font-bold">machakos university</span>
-              <span className="text-[10px]">class attendance | lecturer</span>
+              <span className="text-[10px]">
+                class attendance | {user.role}
+              </span>
             </div>
           </Link>
           <div>

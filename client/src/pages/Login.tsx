@@ -4,6 +4,8 @@ import Field from "../components/Field";
 import Button from "../components/Button";
 import { BsBoxArrowInRight, BsEyeFill, BsPersonCircle } from "react-icons/bs";
 import notify from "../util/notify";
+import { useDispatch } from "react-redux";
+import { updateLocation, updateUser } from "../store/slice";
 
 interface LoginCredentials {
   username: string;
@@ -11,6 +13,7 @@ interface LoginCredentials {
 }
 
 const Login: React.FC = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   // Is Admin Flag
   const [isAdmin, setIsAdmin] = useState<boolean>(true);
@@ -41,9 +44,24 @@ const Login: React.FC = () => {
     if (isAdmin) {
       // Admin Login
       notify(200, "Admin Login Successful");
+      dispatch(
+        updateUser({
+          name: "Ms. Veronica",
+          email: "whatever@admin.mksu.ac.ke",
+          role: "admin",
+        })
+      );
     } else {
       // Student Login
       notify(200, "Student Login Successful");
+      dispatch(
+        updateUser({
+          name: "John Doe",
+          email: "whatever@student.mksu.ac.ke",
+          role: "student",
+        })
+      );
+      dispatch(updateLocation({ lat: -1.5212477, lon: 37.2660878 }));
     }
     navigate("/home");
   };
