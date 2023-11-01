@@ -6,6 +6,9 @@ import moment from "moment/moment";
 import { useDispatch } from "react-redux";
 import { updateLocation } from "./store/slice";
 import notify from "./util/notify";
+import { io } from "socket.io-client";
+
+export const socket = io("http://localhost:3000");
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
@@ -15,7 +18,7 @@ const App: React.FC = () => {
       // Location Handling
       const success = (position: GeolocationPosition) => {
         const { latitude, longitude } = position.coords;
-        dispatch(updateLocation({ lat: latitude, lon: longitude }));
+        dispatch(updateLocation({ latitude: latitude, longitude: longitude }));
       };
       const error = (error: GeolocationPositionError) => {
         notify(500, "Failed to fetch location");
@@ -56,7 +59,7 @@ const App: React.FC = () => {
       }
     };
 
-    handleLocation();
+    // handleLocation();
     handleTheme();
   }, []);
 

@@ -9,13 +9,19 @@ export interface InitialState {
     code: string;
     date: { start: string; end: string };
   };
-  location: { lat: number; lon: number };
+  location: { latitude: number; longitude: number };
   user: {
     name: string;
     email: string;
     role: string;
   };
-  points: { lat: number; lon: number };
+  student: { modal: { show: boolean; message: string } };
+  polygon: {
+    farRight: { latitude: number; longitude: number };
+    farLeft: { latitude: number; longitude: number };
+    nearRight: { latitude: number; longitude: number };
+    nearLeft: { latitude: number; longitude: number };
+  };
 }
 
 const initialState: InitialState = {
@@ -27,13 +33,19 @@ const initialState: InitialState = {
     code: "",
     date: { start: "", end: "" },
   },
-  location: { lat: 0, lon: 0 },
+  location: { latitude: 0, longitude: 0 },
   user: {
     name: "",
     email: "",
     role: "",
   },
-  points: { lat: 0, lon: 0 },
+  student: { modal: { show: false, message: "" } },
+  polygon: {
+    farRight: { latitude: 0, longitude: 0 },
+    farLeft: { latitude: 0, longitude: 0 },
+    nearRight: { latitude: 0, longitude: 0 },
+    nearLeft: { latitude: 0, longitude: 0 },
+  },
 };
 
 export const slice = createSlice({
@@ -57,8 +69,8 @@ export const slice = createSlice({
     },
     // Location Handling
     updateLocation: (state, action) => {
-      const { lat, lon } = action.payload;
-      state.location = { lat, lon };
+      const { latitude, longitude } = action.payload;
+      state.location = { latitude, longitude };
     },
     // User handling
     updateUser: (state, action) => {
@@ -68,13 +80,18 @@ export const slice = createSlice({
     removeUser: (state) => {
       state.user = { name: "", email: "", role: "" };
     },
-    // Point in polygon
-    updatePoints: (state, action) => {
-      const { lat, lon } = action.payload;
-      state.points = { lat, lon };
+    // Student handling
+    updateModal: (state, action) => {
+      const { show, message } = action.payload;
+      state.student.modal = { show, message };
     },
-    removePoints: (state) => {
-      state.points = { lat: 0, lon: 0 };
+    removeModal: (state) => {
+      state.student.modal = { show: false, message: "" };
+    },
+    // Polygon handling
+    updatePolygon: (state, action) => {
+      const { position, location } = action.payload;
+      state.polygon = { ...state.polygon, [position]: location };
     },
   },
 });
@@ -85,8 +102,9 @@ export const {
   updateLocation,
   updateUser,
   removeUser,
-  updatePoints,
-  removePoints,
+  updateModal,
+  removeModal,
+  updatePolygon,
 } = slice.actions;
 
 export default slice.reducer;

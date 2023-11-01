@@ -51,6 +51,12 @@ const Login: React.FC = () => {
           role: "admin",
         })
       );
+      dispatch(
+        updateLocation({
+          latitude: -1.5309363037953803,
+          longitude: 37.26296276940655,
+        })
+      );
     } else {
       // Student Login
       notify(200, "Student Login Successful");
@@ -61,7 +67,12 @@ const Login: React.FC = () => {
           role: "student",
         })
       );
-      dispatch(updateLocation({ lat: -1.5212477, lon: 37.2660878 }));
+      dispatch(
+        updateLocation({
+          latitude: -1.5310593406116904,
+          longitude: 37.26313033718217,
+        })
+      );
     }
     navigate("/home");
   };

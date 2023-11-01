@@ -7,6 +7,7 @@ import { timetable } from "../offline/timetable.json";
 import notify from "../util/notify";
 import { useDispatch } from "react-redux";
 import { updateClass } from "../store/slice";
+import { socket } from "../App";
 
 interface Event {
   id: number;
@@ -50,8 +51,8 @@ const MCalendar: React.FC = () => {
           "YYYYMMDD"
         )}`
       );
+      socket.emit("join_class", timetable[event.id].code.replace(" ", ""));
     }
-    console.log(timetable[event.id]);
   };
 
   useEffect(() => {
@@ -68,7 +69,7 @@ const MCalendar: React.FC = () => {
   }, []);
 
   return (
-    <div className="h-[calc(100vh-80px)] w-[90vw]">
+    <div className="h-[calc(100vh-80px)] min-h-[600px] w-[90vw]">
       <Calendar
         events={events}
         localizer={localizer}

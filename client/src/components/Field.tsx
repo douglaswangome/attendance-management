@@ -43,13 +43,15 @@ const Field: React.FC<FieldProps> = ({
     <div
       className={`relative flex items-end h-[38px] focus-within:h-[68px] ${
         readOnly && "h-[68px]"
-      } ${props.value && "h-[68px]"} transition-all duration-300 ease-in-out`}
+      } ${
+        props.value && "h-[68px]"
+      } transition-[height] duration-300 ease-in-out`}
       onBlur={parentOnBlur === null ? () => {} : parentOnBlur}
     >
       <div
         className={`absolute top-[50%] flex items-center gap-1 capitalize ${
           isFocused ? "-translate-y-[125%] left-0" : "-translate-y-[50%] left-1"
-        } transition-all duration-300 ease-in-out z-[2]`}
+        } transition-[transform] duration-300 ease-in-out z-[2]`}
       >
         {props.type === "password" ? (
           <div onClick={props.changeShowPassword}>
