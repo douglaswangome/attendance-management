@@ -42,7 +42,11 @@ const getDegrees = (direction: string): number => {
   }
 };
 
-const getEitherPolygonSide = (a: Point, b: Point): Return => {
+const getEitherPolygonSide = (
+  a: Point,
+  b: Point,
+  side: "right" | "left"
+): Return => {
   let near: Point;
   let far: Point;
 
@@ -56,14 +60,32 @@ const getEitherPolygonSide = (a: Point, b: Point): Return => {
     degrees = bearing;
   } else if (bearing > 90 && bearing < 180) {
     degrees = 180 - bearing;
+  } else if (bearing > 180 && bearing < 270) {
+    degrees = bearing - 180;
   } else {
-    degrees = 0;
+    degrees = 360 - bearing;
   }
 
-  if (bearing >= 0 && bearing <= 180) {
-    forward = 270;
+  if (side === "right") {
+    if (bearing > 0 && bearing < 90) {
+      forward = 180;
+    } else if (bearing > 90 && bearing < 180) {
+      forward = 270;
+    } else if (bearing > 180 && bearing < 270) {
+      forward = 0;
+    } else {
+      forward = 90;
+    }
   } else {
-    forward = 90;
+    if (bearing > 0 && bearing < 90) {
+      forward = 270;
+    } else if (bearing > 90 && bearing < 180) {
+      forward = 0;
+    } else if (bearing > 180 && bearing < 270) {
+      forward = 90;
+    } else {
+      forward = 180;
+    }
   }
 
   const destinationDistance = distance * Math.sin(degrees);
@@ -92,6 +114,9 @@ const getEitherPolygonSide = (a: Point, b: Point): Return => {
     };
   }
   far = b;
+
+  console.log(direction);
+  console.log({ near, far });
   return { near, far };
 };
 

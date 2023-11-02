@@ -9,7 +9,7 @@ import {
   updateModal,
   updatePolygon,
 } from "../store/slice"; // Redux - Slice
-import isPointInPolygon from "geolib/es/isPointInPolygon"; // Geolib
+// import isPointInPolygon from "geolib/es/isPointInPolygon"; // Geolib
 import { getEitherPolygonSide, Point } from "../util/fn/getEitherPolygonSide"; // Get Either Polygon Side
 import moment from "moment/moment"; // Moment - Show Date
 import { BsCheckCircle, BsPinMap, BsXCircle } from "react-icons/bs"; // Icons
@@ -47,14 +47,14 @@ const Class: React.FC = () => {
     });
   };
   // Student - Check if location is in polygon
-  const checkLocation = (location: Point): boolean => {
-    notify(
-      "",
-      "We will check use your location three times. To make sure you're in the right place "
-    );
-    // if () {}
-    return true;
-  };
+  // const checkLocation = (location: Point): boolean => {
+  //   notify(
+  //     "",
+  //     "We will check use your location three times. To make sure you're in the right place "
+  //   );
+  //   // if () {}
+  //   return true;
+  // };
 
   // Get Notifications
   useEffect(() => {
@@ -69,7 +69,11 @@ const Class: React.FC = () => {
       });
     } else if (user.role === "admin") {
       socket.on("polygon", (data) => {
-        const { near, far } = getEitherPolygonSide(location, data.location);
+        const { near, far } = getEitherPolygonSide(
+          location,
+          data.location,
+          data.side
+        );
         if (data.side === "right") {
           // update far right and near right polygon data
           dispatch(updatePolygon({ position: "nearRight", location: near }));

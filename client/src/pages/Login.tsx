@@ -70,15 +70,15 @@ const Login: React.FC = () => {
       if (credentials.username === "left") {
         dispatch(
           updateLocation({
-            latitude: -1.5308705990118259,
-            longitude: 37.26323449287687,
+            latitude: -1.530528563318187,
+            longitude: 37.262435782015395,
           })
         );
       } else {
         dispatch(
           updateLocation({
-            latitude: -1.5310593406116904,
-            longitude: 37.26313033718217,
+            latitude: -1.5303257136238086,
+            longitude: 37.26339136048161,
           })
         );
       }
