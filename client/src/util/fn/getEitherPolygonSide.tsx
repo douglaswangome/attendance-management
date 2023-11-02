@@ -1,12 +1,11 @@
 import computeDestinationPoint from "geolib/es/computeDestinationPoint";
 import getCompassDirection from "geolib/es/getCompassDirection";
 import getPreciseDistance from "geolib/es/getPreciseDistance";
-import isPointInPolygon from "geolib/es/isPointInPolygon";
 
 interface CompassToDegreesMapping {
   [key: string]: number;
 }
-interface Point {
+export interface Point {
   latitude: number;
   longitude: number;
 }
@@ -14,7 +13,6 @@ interface Point {
 interface Return {
   near: Point;
   far: Point;
-  side: "right" | "left";
 }
 
 const getDegrees = (direction: string): number => {
@@ -44,11 +42,7 @@ const getDegrees = (direction: string): number => {
   }
 };
 
-const getEitherPolygonSide = (
-  a: Point,
-  b: Point,
-  side: "right" | "left"
-): Return => {
+const getEitherPolygonSide = (a: Point, b: Point): Return => {
   let near: Point;
   let far: Point;
 
@@ -98,7 +92,7 @@ const getEitherPolygonSide = (
     };
   }
   far = b;
-  return { near, far, side };
+  return { near, far };
 };
 
 export { getEitherPolygonSide };

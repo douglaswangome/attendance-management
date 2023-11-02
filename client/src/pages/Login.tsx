@@ -67,12 +67,21 @@ const Login: React.FC = () => {
           role: "student",
         })
       );
-      dispatch(
-        updateLocation({
-          latitude: -1.5310593406116904,
-          longitude: 37.26313033718217,
-        })
-      );
+      if (credentials.username === "left") {
+        dispatch(
+          updateLocation({
+            latitude: -1.5308705990118259,
+            longitude: 37.26323449287687,
+          })
+        );
+      } else {
+        dispatch(
+          updateLocation({
+            latitude: -1.5310593406116904,
+            longitude: 37.26313033718217,
+          })
+        );
+      }
     }
     navigate("/home");
   };

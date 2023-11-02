@@ -35,6 +35,11 @@ io.on("connection", (socket) => {
   socket.on("update_polygon", (data) => {
     socket.to(data.room).emit("polygon", data);
   });
+
+  socket.on("send_polygon", (data) => {
+    console.log(data);
+    socket.to(data.room).emit("polygon_markers", data);
+  });
 });
 
 server.listen(process.env.PORT, (): void => {

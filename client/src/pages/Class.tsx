@@ -1,54 +1,84 @@
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
-import { InitialState, updateModal, updatePolygon } from "../store/slice";
-import moment from "moment/moment";
-import { useNavigate } from "react-router-dom";
-import { BsCheckCircle, BsXCircle } from "react-icons/bs";
-import Loader from "../components/Loader";
-import { socket } from "../App";
-import { useDispatch } from "react-redux";
-import Modal from "../components/Modal";
-import Button from "../components/Button";
-import { getEitherPolygonSide } from "../util/fn/getEitherPolygonSide";
+import { socket } from "../App"; // Socket
+import { useNavigate } from "react-router-dom"; // React Router - Navigation
+import { useSelector } from "react-redux"; // Redux
+import { useDispatch } from "react-redux"; // Redux
+import {
+  initialState,
+  InitialState,
+  updateModal,
+  updatePolygon,
+} from "../store/slice"; // Redux - Slice
+import { getEitherPolygonSide } from "../util/fn/getEitherPolygonSide"; // Get Either Polygon Side
+import moment from "moment/moment"; // Moment - Show Date
+import { BsCheckCircle, BsPinMap, BsXCircle } from "react-icons/bs"; // Icons
+import Loader from "../components/Loader"; // Loader Component
+import Modal from "../components/Modal"; // Modal Component
+import Button from "../components/Button"; // Button Component
+import notify from "../util/notify"; // Notification Component
 
 const Class: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { classDetails, location, user, student } = useSelector(
+  const { classDetails, location, polygon, user, student } = useSelector(
     (state: { slice: InitialState }) => state.slice
   );
 
-  // Get farthest right (of the lecturer) and farthest left (of the lecturer) and create a polygon add 5 meters to the right and left and check if the user is inside the polygon
-  // If user is inside the polygon then allow the user to update location
-  // Emit a "notification" to the "room"
-  const emitNotification = () => {
-    socket.emit("send_notification", {
+  // Admin
+  // // Emit Notification to Students
+  const emitNotification = (side: "right" | "left") => {
+    if (side === "right") {
+      socket.emit("send_notification", {
+        room: classDetails.code.replace(" ", ""),
+        message: "Are you the farthest right student?",
+      });
+    } else {
+      socket.emit("send_notification", {
+        room: classDetails.code.replace(" ", ""),
+        message: "Are you the farthest left student?",
+      });
+    }
+  };
+  // // Send Polygon Points
+  const sendPolygonPoints = () => {
+    socket.emit("send_polygon", {
       room: classDetails.code.replace(" ", ""),
-      message: "Are you the farthest right student?",
+      polygon: polygon,
     });
   };
 
-  // Check for receive notification for users
+  // Get Notifications
   useEffect(() => {
     if (user.role === "student") {
       socket.on("notification", (data) => {
-        dispatch(updateModal({ show: true, message: data.message }));
+        dispatch(updateModal({ show: true, message: data }));
+      });
+
+      socket.on("polygon_markers", (data) => {
+        dispatch(updatePolygon(data.polygon));
+        notify("", "Polygon has been updated. You can now mark your location");
       });
     } else if (user.role === "admin") {
-      // update far right and near right polygon data
       socket.on("polygon", (data) => {
-        const { near, far, side } = getEitherPolygonSide(
-          location,
-          data.location,
-          "right"
-        );
-        if (side === "right") {
-          dispatch(updatePolygon({ nearRight: near, farRight: far }));
+        const { near, far } = getEitherPolygonSide(location, data.location);
+        if (data.side === "right") {
+          // update far right and near right polygon data
+          dispatch(updatePolygon({ position: "nearRight", location: near }));
+          dispatch(updatePolygon({ position: "farRight", location: far }));
         } else {
-          dispatch(updatePolygon({ nearLeft: near, farLeft: far }));
+          // update far left and near left polygon data
+          dispatch(updatePolygon({ position: "nearLeft", location: near }));
+          dispatch(updatePolygon({ position: "farLeft", location: far }));
         }
       });
     }
+
+    // CleanUp - Remove listeners
+    return () => {
+      socket.off("notification");
+      socket.off("polygon_markers");
+      socket.off("polygon");
+    };
   }, [socket]);
 
   // Check if state is empty for all users
@@ -79,6 +109,7 @@ const Class: React.FC = () => {
                   socket.emit("update_polygon", {
                     room: classDetails.code.replace(" ", ""),
                     location: location,
+                    side: student.modal.message.split(" ")[4],
                   });
                   dispatch(updateModal({ modal: false }));
                 }}
@@ -136,15 +167,12 @@ const Class: React.FC = () => {
       </div>
       <div className="flex flex-col">
         <span className="text-xl underline">Location Details</span>
-        <div className="flex flex-col pl-2 capitalize">
+        <div className="flex flex-col capitalize">
           <div className="flex items-center gap-1 normal-case">
             {location.latitude !== 0 && location.longitude !== 0 ? (
               <>
                 <BsCheckCircle className="text-green-600" />
                 <span>Your location has been updated</span>
-                <span>
-                  {location.latitude} {location.longitude}
-                </span>
               </>
             ) : (
               <>
@@ -154,16 +182,82 @@ const Class: React.FC = () => {
             )}
           </div>
           {user.role === "admin" ? (
-            <div>
-              <span className="flex gap-1 normal-case">
-                <span
-                  className="underline cursor-pointer"
-                  onClick={emitNotification}
-                >
-                  Click
-                </span>
-                to allow farthest right student to update location
-              </span>
+            <div className="flex flex-col gap-2">
+              <span className="underline">Polygon Details</span>
+              <div className="flex flex-col gap-1 ml-2">
+                <div className="flex gap-2">
+                  <Button
+                    hover={false}
+                    icon={BsPinMap}
+                    text="right"
+                    solid
+                    fn={() => emitNotification("right")}
+                    width="fit"
+                  />
+                  <div className="flex items-center gap-1">
+                    {polygon.farRight.latitude !== 0 &&
+                    polygon.farRight.longitude !== 0 ? (
+                      <>
+                        <BsCheckCircle className="text-green-600" />
+                        <span>Done</span>
+                      </>
+                    ) : (
+                      <>
+                        <Loader />
+                        <span>Fetching location</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    hover={false}
+                    icon={BsPinMap}
+                    text="left"
+                    solid
+                    fn={() => emitNotification("left")}
+                    width="fit"
+                  />
+                  <div className="flex items-center gap-1">
+                    {polygon.farLeft.latitude !== 0 &&
+                    polygon.farLeft.longitude !== 0 ? (
+                      <>
+                        <BsCheckCircle className="text-green-600" />
+                        <span>Done</span>
+                      </>
+                    ) : (
+                      <>
+                        <Loader />
+                        <span>Fetching location</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-1 normal-case">
+                  {polygon.farLeft === initialState.polygon.farLeft &&
+                  polygon.nearLeft === initialState.polygon.nearLeft &&
+                  polygon.farRight === initialState.polygon.farRight &&
+                  polygon.nearRight === initialState.polygon.nearRight ? (
+                    <>
+                      <BsXCircle className="text-red-600" />
+                      <span>Polygon is not ready</span>
+                    </>
+                  ) : (
+                    <>
+                      <BsCheckCircle className="text-green-600" />
+                      <span className="flex gap-1">Polygon is ready</span>
+                      <Button
+                        icon={BsCheckCircle}
+                        text="Send"
+                        fn={sendPolygonPoints}
+                        hover={false}
+                        solid
+                        width="fit"
+                      />
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
           ) : null}
         </div>

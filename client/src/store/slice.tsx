@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { Point } from "../util/fn/getEitherPolygonSide";
 
 export interface InitialState {
   classDetails: {
@@ -9,7 +10,7 @@ export interface InitialState {
     code: string;
     date: { start: string; end: string };
   };
-  location: { latitude: number; longitude: number };
+  location: Point;
   user: {
     name: string;
     email: string;
@@ -17,14 +18,14 @@ export interface InitialState {
   };
   student: { modal: { show: boolean; message: string } };
   polygon: {
-    farRight: { latitude: number; longitude: number };
-    farLeft: { latitude: number; longitude: number };
-    nearRight: { latitude: number; longitude: number };
-    nearLeft: { latitude: number; longitude: number };
+    farRight: Point;
+    farLeft: Point;
+    nearRight: Point;
+    nearLeft: Point;
   };
 }
 
-const initialState: InitialState = {
+export const initialState: InitialState = {
   classDetails: {
     currentClass: "",
     lecturer: "",
