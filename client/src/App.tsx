@@ -33,7 +33,7 @@ const App: React.FC = () => {
       if (navigator.geolocation) {
         navigator.permissions.query({ name: "geolocation" }).then((result) => {
           if (result.state === "granted" || result.state === "prompt") {
-            navigator.geolocation.getCurrentPosition(success, error, options);
+            navigator.geolocation.watchPosition(success, error, options);
           } else {
             notify(500, "Please enable location to get your attendance");
           }

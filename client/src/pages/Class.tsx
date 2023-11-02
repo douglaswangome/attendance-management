@@ -9,7 +9,8 @@ import {
   updateModal,
   updatePolygon,
 } from "../store/slice"; // Redux - Slice
-import { getEitherPolygonSide } from "../util/fn/getEitherPolygonSide"; // Get Either Polygon Side
+import isPointInPolygon from "geolib/es/isPointInPolygon"; // Geolib
+import { getEitherPolygonSide, Point } from "../util/fn/getEitherPolygonSide"; // Get Either Polygon Side
 import moment from "moment/moment"; // Moment - Show Date
 import { BsCheckCircle, BsPinMap, BsXCircle } from "react-icons/bs"; // Icons
 import Loader from "../components/Loader"; // Loader Component
@@ -24,8 +25,7 @@ const Class: React.FC = () => {
     (state: { slice: InitialState }) => state.slice
   );
 
-  // Admin
-  // // Emit Notification to Students
+  // Admin - Emit Notification to Students
   const emitNotification = (side: "right" | "left") => {
     if (side === "right") {
       socket.emit("send_notification", {
@@ -39,12 +39,21 @@ const Class: React.FC = () => {
       });
     }
   };
-  // // Send Polygon Points
+  // Admin Send Polygon Points
   const sendPolygonPoints = () => {
     socket.emit("send_polygon", {
       room: classDetails.code.replace(" ", ""),
       polygon: polygon,
     });
+  };
+  // Student - Check if location is in polygon
+  const checkLocation = (location: Point): boolean => {
+    notify(
+      "",
+      "We will check use your location three times. To make sure you're in the right place "
+    );
+    // if () {}
+    return true;
   };
 
   // Get Notifications
@@ -259,7 +268,12 @@ const Class: React.FC = () => {
                 </div>
               </div>
             </div>
-          ) : null}
+          ) : (
+            // Add student location when polygon is ready
+            <div className="flex flex-col gap-2">
+              <span>Add Location</span>
+            </div>
+          )}
         </div>
       </div>
     </div>
