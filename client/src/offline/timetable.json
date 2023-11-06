@@ -3,7 +3,7 @@
     {
       "unit": "programming languages",
       "code": "sco 306",
-      "date": { "start": 202310231300, "end": 202310231600 },
+      "date": { "start": 202311061300, "end": 202311061600 },
       "lecturer": "Ms. Mercy",
       "room": "general lab",
       "class": "j17-2021"
@@ -11,7 +11,7 @@
     {
       "unit": "software project management",
       "code": "sco 302",
-      "date": { "start": 202310241600, "end": 202310241900 },
+      "date": { "start": 202311071600, "end": 202311071900 },
       "lecturer": "Mr. Omuya",
       "room": "general lab",
       "class": "j17-2021"
@@ -19,7 +19,7 @@
     {
       "unit": "component programming",
       "code": "sco 310",
-      "date": { "start": 202310251000, "end": 202310251300 },
+      "date": { "start": 202311081000, "end": 202311081300 },
       "lecturer": "Mr. George",
       "room": "general lab",
       "class": "j17-2021"
@@ -27,7 +27,7 @@
     {
       "unit": "advanced database systems",
       "code": "sco 302",
-      "date": { "start": 202310251300, "end": 202310251600 },
+      "date": { "start": 202311081300, "end": 202311081600 },
       "lecturer": "Mr. Mathenge",
       "room": "general lab",
       "class": "j17-2021"
@@ -35,7 +35,7 @@
     {
       "unit": "design & analysis of algorithms",
       "code": "sco 308",
-      "date": { "start": 202310260700, "end": 202310261000 },
+      "date": { "start": 202311090700, "end": 202311091000 },
       "lecturer": "Mr. Kimeu",
       "room": "general lab",
       "class": "j17-2021"
@@ -43,7 +43,7 @@
     {
       "unit": "computer networks",
       "code": "sco 300",
-      "date": { "start": 202310261000, "end": 202310261300 },
+      "date": { "start": 202311091000, "end": 202311091300 },
       "lecturer": "Ms. Veronica",
       "room": "general lab",
       "class": "j17-2021"
@@ -51,7 +51,7 @@
     {
       "unit": "programming languages",
       "code": "sco 306",
-      "date": { "start": 202310301300, "end": 202310301600 },
+      "date": { "start": 202311131300, "end": 202311131600 },
       "lecturer": "Ms. Mercy",
       "room": "general lab",
       "class": "j17-2021"
@@ -59,7 +59,7 @@
     {
       "unit": "software project management",
       "code": "sco 302",
-      "date": { "start": 202310311600, "end": 202310311900 },
+      "date": { "start": 202311141600, "end": 202311141900 },
       "lecturer": "Mr. Omuya",
       "room": "general lab",
       "class": "j17-2021"
@@ -67,7 +67,7 @@
     {
       "unit": "component programming",
       "code": "sco 310",
-      "date": { "start": 202311011000, "end": 202311011300 },
+      "date": { "start": 202311151000, "end": 202311151300 },
       "lecturer": "Mr. George",
       "room": "general lab",
       "class": "j17-2021"
@@ -75,7 +75,7 @@
     {
       "unit": "advanced database systems",
       "code": "sco 302",
-      "date": { "start": 202311011300, "end": 202311011600 },
+      "date": { "start": 202311151300, "end": 202311151600 },
       "lecturer": "Mr. Mathenge",
       "room": "general lab",
       "class": "j17-2021"
@@ -83,7 +83,7 @@
     {
       "unit": "design & analysis of algorithms",
       "code": "sco 308",
-      "date": { "start": 202311020700, "end": 202311021000 },
+      "date": { "start": 202311160700, "end": 202311161000 },
       "lecturer": "Mr. Kimeu",
       "room": "general lab",
       "class": "j17-2021"
@@ -91,7 +91,7 @@
     {
       "unit": "computer networks",
       "code": "sco 300",
-      "date": { "start": 202311021000, "end": 202311021300 },
+      "date": { "start": 202311161000, "end": 202311161300 },
       "lecturer": "Ms. Veronica",
       "room": "general lab",
       "class": "j17-2021"
@@ -99,7 +99,7 @@
     {
       "unit": "computer networks",
       "code": "sco 300",
-      "date": { "start": 202311020300, "end": 202311022330 },
+      "date": { "start": 202311070000, "end": 202311072330 },
       "lecturer": "Ms. Veronica",
       "room": "general lab",
       "class": "j17-2021"

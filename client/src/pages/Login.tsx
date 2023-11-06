@@ -8,120 +8,120 @@ import { useDispatch } from "react-redux";
 import { updateLocation, updateUser } from "../store/slice";
 
 interface LoginCredentials {
-  username: string;
-  password: string;
+	username: string;
+	password: string;
 }
 
 const Login: React.FC = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  // Is Admin Flag
-  const [isAdmin, setIsAdmin] = useState<boolean>(true);
-  const handleIsAdmin = () => {
-    setIsAdmin(!isAdmin);
-  };
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
+	// Is Admin Flag
+	const [isAdmin, setIsAdmin] = useState<boolean>(true);
+	const handleIsAdmin = () => {
+		setIsAdmin(!isAdmin);
+	};
 
-  // Credentials
-  const [credentials, setCredentials] = useState<LoginCredentials>({
-    username: "",
-    password: "",
-  });
+	// Credentials
+	const [credentials, setCredentials] = useState<LoginCredentials>({
+		username: "",
+		password: "",
+	});
 
-  const handleUpdateCredentials = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const { name, value } = event.target;
-    setCredentials({ ...credentials, [name]: value });
-  };
+	const handleUpdateCredentials = (
+		event: React.ChangeEvent<HTMLInputElement>
+	) => {
+		const { name, value } = event.target;
+		setCredentials({ ...credentials, [name]: value });
+	};
 
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const handleShowPassword = () => {
-    setShowPassword(true);
-    setTimeout(() => setShowPassword(false), 2000);
-  };
+	const [showPassword, setShowPassword] = useState<boolean>(false);
+	const handleShowPassword = () => {
+		setShowPassword(true);
+		setTimeout(() => setShowPassword(false), 2000);
+	};
 
-  const handleSubmit = () => {
-    if (isAdmin) {
-      // Admin Login
-      notify(200, "Admin Login Successful");
-      dispatch(
-        updateUser({
-          name: "Ms. Veronica",
-          email: "whatever@admin.mksu.ac.ke",
-          role: "admin",
-        })
-      );
-      dispatch(
-        updateLocation({
-          latitude: -1.5309363037953803,
-          longitude: 37.26296276940655,
-        })
-      );
-    } else {
-      // Student Login
-      notify(200, "Student Login Successful");
-      dispatch(
-        updateUser({
-          name: "John Doe",
-          email: "whatever@student.mksu.ac.ke",
-          role: "student",
-        })
-      );
-      if (credentials.username === "left") {
-        dispatch(
-          updateLocation({
-            latitude: -1.530528563318187,
-            longitude: 37.262435782015395,
-          })
-        );
-      } else {
-        dispatch(
-          updateLocation({
-            latitude: -1.5303257136238086,
-            longitude: 37.26339136048161,
-          })
-        );
-      }
-    }
-    navigate("/home");
-  };
+	const handleSubmit = () => {
+		if (isAdmin) {
+			// Admin Login
+			notify(200, "Admin Login Successful");
+			dispatch(
+				updateUser({
+					name: "Ms. Veronica",
+					email: "whatever@admin.mksu.ac.ke",
+					role: "admin",
+				})
+			);
+			dispatch(
+				updateLocation({
+					latitude: -1.5309363037953803,
+					longitude: 37.26296276940655,
+				})
+			);
+		} else {
+			// Student Login
+			notify(200, "Student Login Successful");
+			dispatch(
+				updateUser({
+					name: "John Doe",
+					email: "whatever@student.mksu.ac.ke",
+					role: "student",
+				})
+			);
+			if (credentials.username === "left") {
+				dispatch(
+					updateLocation({
+						latitude: -1.530528563318187,
+						longitude: 37.262435782015395,
+					})
+				);
+			} else {
+				dispatch(
+					updateLocation({
+						latitude: -1.5303257136238086,
+						longitude: 37.26339136048161,
+					})
+				);
+			}
+		}
+		navigate("/home");
+	};
 
-  return (
-    <div className="flex flex-col gap-2 p-4 mx-2 border border-black rounded-lg dark:border-lesser-dark">
-      <span className="font-bold">
-        Login to Machakos Attendance Portal | {isAdmin ? "Admin" : "Student"}
-      </span>
-      <div className="flex gap-1">
-        <span className="underline cursor-pointer" onClick={handleIsAdmin}>
-          Click
-        </span>
-        <span>to change role</span>
-      </div>
-      <div className="flex flex-col gap-2">
-        <Field
-          label="username"
-          icon={BsPersonCircle}
-          name="username"
-          type="text"
-          value={credentials.username}
-          onChange={handleUpdateCredentials}
-        />
-        <Field
-          label="password"
-          icon={BsEyeFill}
-          name="password"
-          type={showPassword ? "text" : "password"}
-          value={credentials.password}
-          onChange={handleUpdateCredentials}
-          changeShowPassword={handleShowPassword}
-        />
-        <Button icon={BsBoxArrowInRight} text="Sign In" fn={handleSubmit} />
-        <Link to="/register" className="underline cursor-pointer">
-          Don't have an account? Sign Up.
-        </Link>
-      </div>
-    </div>
-  );
+	return (
+		<div className="flex flex-col gap-2 p-4 mx-2 w-fit border border-black rounded-lg dark:border-lesser-dark">
+			<span className="font-bold">
+				Login to Machakos Attendance Portal | {isAdmin ? "Admin" : "Student"}
+			</span>
+			<div className="flex gap-1">
+				<span className="underline cursor-pointer" onClick={handleIsAdmin}>
+					Click
+				</span>
+				<span>to change role</span>
+			</div>
+			<div className="flex flex-col gap-2">
+				<Field
+					label="username"
+					icon={BsPersonCircle}
+					name="username"
+					type="text"
+					value={credentials.username}
+					onChange={handleUpdateCredentials}
+				/>
+				<Field
+					label="password"
+					icon={BsEyeFill}
+					name="password"
+					type={showPassword ? "text" : "password"}
+					value={credentials.password}
+					onChange={handleUpdateCredentials}
+					changeShowPassword={handleShowPassword}
+				/>
+				<Button icon={BsBoxArrowInRight} text="Sign In" fn={handleSubmit} />
+				<Link to="/register" className="underline cursor-pointer">
+					Don't have an account? Sign Up.
+				</Link>
+			</div>
+		</div>
+	);
 };
 
 export default Login;
