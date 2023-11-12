@@ -10,8 +10,8 @@ const Class = lazy(() => import("../pages/Class"));
 // Layouts
 const AuthLayout = () => {
 	return (
-		<div className="dark:bg-dark dark:text-white">
-			<div className="flex items-center justify-center h-screen flex-shrink-0">
+		<div className="transition-colors ease-linear dark:bg-dark dark:text-white">
+			<div className="flex items-center justify-center flex-shrink-0 min-h-screen">
 				<Outlet />
 			</div>
 		</div>
@@ -20,9 +20,9 @@ const AuthLayout = () => {
 
 const MainLayout = () => {
 	return (
-		<div className="dark:bg-dark dark:text-white">
+		<div className="flex flex-col min-h-screen dark:bg-dark dark:text-white">
 			<Header />
-			<div className="flex items-center justify-center flex-shrink-0 w-screen h-[calc(100vh-70px)] min-h-[calc(100vh-70px)] overflow-y-scroll transition-colors duration-300 ease-in-out">
+			<div className="flex items-center justify-center flex-shrink-0 w-screenn">
 				<Outlet />
 			</div>
 		</div>

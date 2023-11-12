@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import Field from "../components/Field";
-import Button from "../components/Button";
+import { Link, useNavigate } from "react-router-dom"; // React Router
+import Field from "../components/Field"; // Component
+import Button from "../components/Button"; // Component
+import notify from "../util/notify"; // Component
 import {
 	BsBoxArrowInRight,
 	BsCheckCircle,
@@ -10,9 +11,15 @@ import {
 	BsPersonCircle,
 	BsPersonBadge,
 	BsXCircle,
-} from "react-icons/bs";
-import notify from "../util/notify";
-import usePasswordCheck from "../util/hooks/usePasswordCheck";
+} from "react-icons/bs"; // Icons
+import usePasswordCheck from "../util/hooks/usePasswordCheck"; // Custom hook to check password strength
+import { auth } from "../util/firebase"; // Firebase auth
+import {
+	createUserWithEmailAndPassword,
+	sendEmailVerification,
+	signOut,
+} from "firebase/auth"; // Firebase auth method
+import { api } from "../App"; // Axios instance
 
 interface RegisterCredentials {
 	username: string;
@@ -22,6 +29,7 @@ interface RegisterCredentials {
 }
 
 const Register: React.FC = () => {
+	const navigate = useNavigate();
 	// Credentials
 	const [credentials, setCredentials] = useState<RegisterCredentials>({
 		username: "",
@@ -32,24 +40,26 @@ const Register: React.FC = () => {
 
 	const handleUpdateCredentials = (
 		event: React.ChangeEvent<HTMLInputElement>
-	) => {
+	): void => {
 		const { name, value } = event.target;
 		setCredentials({ ...credentials, [name]: value });
 	};
 
-	const handleOnParentBlur = () => {
+	const handleOnParentBlur = (): void => {
+		const role = credentials.email.split("@")[1].split(".")[0];
+
 		if (credentials.email) {
 			setCredentials({
 				...credentials,
 				username: credentials.email.split("@")[0],
-				role: credentials.email.split("@")[1].split(".")[0],
+				role: role === "mksu" ? "admin" : "student",
 			});
 		}
 	};
 
 	const [confirmPassword, setConfirmPassword] = useState<string>("");
 	const [showPassword, setShowPassword] = useState<boolean>(false);
-	const handleShowPassword = () => {
+	const handleShowPassword = (): void => {
 		setShowPassword(true);
 		setTimeout(() => setShowPassword(false), 2000);
 	};
@@ -63,7 +73,7 @@ const Register: React.FC = () => {
 		match: false,
 	});
 
-	const handlePasswordFocusHandling = () => {
+	const handlePasswordFocusHandling = (): void => {
 		setPasswordHandling((prevPasswordHandling) => {
 			return {
 				...prevPasswordHandling,
@@ -72,11 +82,31 @@ const Register: React.FC = () => {
 		});
 	};
 
-	const handleSubmit = () => {
+	const handleSubmit = async (): Promise<void> => {
 		if (usePasswordCheck(credentials.password).length > 0) {
 			notify(500, "Password is not strong enough");
 		} else {
-			notify(200, "Registration Successful");
+			try {
+				const { user } = await createUserWithEmailAndPassword(
+					auth,
+					credentials.email,
+					credentials.password
+				);
+				await sendEmailVerification(user);
+				await api.post("/add_user", {
+					user: {
+						username: credentials.username,
+						role: credentials.role,
+						email: { address: user.email, verified: user.emailVerified },
+					},
+				});
+				await signOut(auth);
+				navigate("/");
+				notify(200, "Sign Up successful. Please verify your email.");
+			} catch (error) {
+				console.log(error);
+				notify(500, "Sign Up failed. Please try again!");
+			}
 		}
 	};
 
@@ -96,7 +126,9 @@ const Register: React.FC = () => {
 				};
 			});
 		}
+	}, [credentials.password]);
 
+	useEffect(() => {
 		if (credentials.password !== "") {
 			if (credentials.password === confirmPassword) {
 				setPasswordHandling((prevPasswordHandling) => {
@@ -114,10 +146,10 @@ const Register: React.FC = () => {
 				});
 			}
 		}
-	}, [credentials.password, confirmPassword]);
+	}, [confirmPassword]);
 
 	return (
-		<div className="p-4 mx-2 border border-black w-fit rounded-lg dark:border-lesser-dark">
+		<div className="p-4 mx-2 border border-black rounded-lg w-fit dark:border-lesser-dark">
 			<span className="font-bold">Register to Machakos Attendance Portal</span>
 			<div className="flex flex-col gap-2">
 				<Field
@@ -163,7 +195,7 @@ const Register: React.FC = () => {
 					/>
 					{passwordHandling.errors ? (
 						<div
-							className={`absolute left-0 flex flex-col w-full px-2 divide-y divide-black top-full divide-dashed bg-white z-[3]  rounded-lg mt-1 text-sm capitalize ${
+							className={`absolute left-0 flex flex-col w-full px-2 divide-y divide-black dark:divide-less-dark top-full divide-dashed bg-white dark:bg-dark dark:border-less-dark z-[3]  rounded-lg mt-1 text-sm capitalize ${
 								passwordHandling.focus
 									? "h-fit border border-black opacity-100 pointer-events-auto"
 									: "h-0 opacity-0 pointer-events-none"
@@ -176,7 +208,9 @@ const Register: React.FC = () => {
 					) : (
 						<div className="flex items-center gap-1 text-xs text-green-600">
 							<BsCheckCircle />
-							<span className="text-black">Password is strong enough!</span>
+							<span className="text-black dark:text-white">
+								Password is strong enough!
+							</span>
 						</div>
 					)}
 				</div>
@@ -194,12 +228,16 @@ const Register: React.FC = () => {
 						(!passwordHandling.match ? (
 							<div className="flex items-center gap-1 text-xs text-red-600">
 								<BsXCircle />
-								<span className="text-black">Passwords do not match!</span>
+								<span className="text-black dark:text-white">
+									Passwords do not match!
+								</span>
 							</div>
 						) : (
 							<div className="flex items-center gap-1 text-xs text-green-600">
 								<BsCheckCircle />
-								<span className="text-black">Passwords match!</span>
+								<span className="text-black dark:text-white">
+									Passwords match!
+								</span>
 							</div>
 						))}
 				</div>

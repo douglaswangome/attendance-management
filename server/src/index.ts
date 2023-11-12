@@ -5,43 +5,48 @@ import helmet from "helmet";
 import http from "http";
 import { Server } from "socket.io";
 import dotenv from "dotenv";
+import { addUser, getUser } from "./models/users";
 dotenv.config();
 
 const app: Express = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
-  cors({
-    origin: "http://localhost:5173",
-  })
+	cors({
+		origin: "http://localhost:5173",
+	})
 );
 app.use(helmet());
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: {
-    origin: "http://localhost:5173",
-  },
+	cors: {
+		origin: "http://localhost:5173",
+	},
 });
 
 io.on("connection", (socket) => {
-  socket.on("join_class", (data) => {
-    socket.join(data);
-  });
+	socket.on("join_class", (data) => {
+		socket.join(data);
+	});
 
-  socket.on("send_notification", (data) => {
-    socket.to(data.room).emit("notification", data.message);
-  });
+	socket.on("send_notification", (data) => {
+		socket.to(data.room).emit("notification", data.message);
+	});
 
-  socket.on("update_polygon", (data) => {
-    socket.to(data.room).emit("polygon", data);
-  });
+	socket.on("update_polygon", (data) => {
+		socket.to(data.room).emit("polygon", data);
+	});
 
-  socket.on("send_polygon", (data) => {
-    console.log(data);
-    socket.to(data.room).emit("polygon_markers", data);
-  });
+	socket.on("send_polygon", (data) => {
+		console.log(data);
+		socket.to(data.room).emit("polygon_markers", data);
+	});
 });
 
+// Routes
+app.post("/api/add_user", (req: Request, res: Response) => addUser(res, req.body.user));
+app.get("/api/get_user", (req: Request, res: Response) => getUser(res, req.query.username as string));
+
 server.listen(process.env.PORT, (): void => {
-  console.log(`Server is running on port ${process.env.PORT}`);
+	console.log(`Server is running on port ${process.env.PORT}`);
 });

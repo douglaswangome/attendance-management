@@ -8,8 +8,9 @@ import {
 	InitialState,
 	updateModal,
 	updatePolygon,
+	updateWholePolygon,
 } from "../store/slice"; // Redux - Slice
-// import isPointInPolygon from "geolib/es/isPointInPolygon"; // Geolib
+import isPointInPolygon from "geolib/es/isPointInPolygon"; // Geolib
 import { getEitherPolygonSide } from "../util/fn/getEitherPolygonSide"; // Get Either Polygon Side
 import moment from "moment/moment"; // Moment - Show Date
 import { BsCheckCircle, BsPinMap, BsXCircle } from "react-icons/bs"; // Icons
@@ -26,7 +27,7 @@ const Class: React.FC = () => {
 	);
 
 	// Admin - Emit Notification to Students
-	const emitNotification = (side: "right" | "left") => {
+	const emitNotification = (side: "right" | "left"): void => {
 		if (side === "right") {
 			socket.emit("send_notification", {
 				room: classDetails.code.replace(" ", ""),
@@ -40,21 +41,55 @@ const Class: React.FC = () => {
 		}
 	};
 	// Admin Send Polygon Points
-	const sendPolygonPoints = () => {
+	const sendPolygonPoints = (): void => {
 		socket.emit("send_polygon", {
 			room: classDetails.code.replace(" ", ""),
 			polygon: polygon,
 		});
 	};
+
 	// Student - Check if location is in polygon
-	// const checkLocation = (location: Point): boolean => {
-	//   notify(
-	//     "",
-	//     "We will check use your location three times. To make sure you're in the right place "
-	//   );
-	//   // if () {}
-	//   return true;
-	// };
+	const setAttendance = (): void => {
+		let result: boolean = false;
+		if (
+			location.latitude === polygon.farRight.latitude &&
+			location.longitude === polygon.farRight.longitude
+		) {
+			result = true;
+			console.log("far right");
+		} else if (
+			location.latitude === polygon.nearRight.latitude &&
+			location.longitude === polygon.nearRight.longitude
+		) {
+			result = true;
+			console.log("near right");
+		} else if (
+			location.latitude === polygon.farLeft.latitude &&
+			location.longitude === polygon.farLeft.longitude
+		) {
+			result = true;
+			console.log("far left");
+		} else if (
+			location.latitude === polygon.nearLeft.latitude &&
+			location.longitude === polygon.nearLeft.longitude
+		) {
+			result = true;
+			console.log("near left");
+		} else {
+			result = isPointInPolygon(location, [
+				polygon.nearRight,
+				polygon.farRight,
+				polygon.farLeft,
+				polygon.nearLeft,
+			]);
+		}
+
+		if (result) {
+			notify(200, "Kudos! You are in class");
+		} else {
+			notify(400, "Sorry! You are not in class");
+		}
+	};
 
 	// Get Notifications
 	useEffect(() => {
@@ -64,34 +99,39 @@ const Class: React.FC = () => {
 			});
 
 			socket.on("polygon_markers", (data) => {
-				dispatch(updatePolygon(data.polygon));
+				dispatch(updateWholePolygon(data.polygon));
 				notify("", "Polygon has been updated. You can now mark your location");
 			});
 		} else if (user.role === "admin") {
 			socket.on("polygon", (data) => {
-				const { near, far } = getEitherPolygonSide(
-					location,
-					data.location,
-					data.side
-				);
-				if (data.side === "right") {
-					// update far right and near right polygon data
-					dispatch(updatePolygon({ position: "nearRight", location: near }));
-					dispatch(updatePolygon({ position: "farRight", location: far }));
-				} else {
-					// update far left and near left polygon data
-					dispatch(updatePolygon({ position: "nearLeft", location: near }));
-					dispatch(updatePolygon({ position: "farLeft", location: far }));
+				try {
+					const { near, far } = getEitherPolygonSide(
+						location,
+						data.location,
+						data.side
+					);
+					if (data.side === "right") {
+						// update far right and near right polygon data
+						dispatch(updatePolygon({ position: "nearRight", location: near }));
+						dispatch(updatePolygon({ position: "farRight", location: far }));
+					} else if (data.side === "left") {
+						// update far left and near left polygon data
+						dispatch(updatePolygon({ position: "nearLeft", location: near }));
+						dispatch(updatePolygon({ position: "farLeft", location: far }));
+					}
+				} catch (error) {
+					notify(500, "Error: Polygon is not ready");
+					console.log(error);
 				}
 			});
 		}
 
 		// CleanUp - Remove listeners
-		return () => {
-			socket.off("notification");
-			socket.off("polygon_markers");
-			socket.off("polygon");
-		};
+		// return () => {
+		// 	socket.off("notification");
+		// 	socket.off("polygon_markers");
+		// 	socket.off("polygon");
+		// };
 	}, [socket]);
 
 	// Check if state is empty for all users
@@ -144,12 +184,7 @@ const Class: React.FC = () => {
 					</div>
 					<div className="flex gap-2">
 						<span>Lecturer:</span>
-						<span>
-							{classDetails.lecturer}{" "}
-							{classDetails.lecturer.toLowerCase() === user.name.toLowerCase()
-								? "(You)"
-								: ""}
-						</span>
+						<span>{classDetails.lecturer}</span>
 					</div>
 					<div className="flex gap-2">
 						<span>Room:</span>
@@ -274,7 +309,7 @@ const Class: React.FC = () => {
 						</div>
 					) : (
 						// Add student location when polygon is ready
-						<div className="flex flex-col gap-2">
+						<div className="flex flex-col gap-2" onClick={setAttendance}>
 							<span>Add Location</span>
 						</div>
 					)}

@@ -14,22 +14,42 @@ const getEitherPolygonSide = (
 	b: Point,
 	side: "right" | "left"
 ): { near: Point; far: Point } => {
-	// Get the distance
-	const distance = getPreciseDistance(a, b, 0.0001);
+	let near: Point;
+	let far: Point;
+
+	// Calculate Near
 	const direction = getCompassDirection(a, b);
+	const degrees = getDegrees(direction);
+	const { forward, x } = getDirections(degrees, side);
 
-	// Handle degrees from the direction
-	const bearing = getDegrees(direction);
+	const destinationDistance = getPreciseDistance(a, b, 0.0001) * Math.sin(x);
+	const destinationCoordinates = computeDestinationPoint(
+		b,
+		destinationDistance,
+		forward
+	);
 
-	// Handle direction from the bearing
-	const { forward, x } = getDirections(bearing, side);
-	const h = distance * Math.sin(x) + 0.1 + 0.22360679775;
+	if (
+		direction === "E" ||
+		direction === "ESE" ||
+		direction === "SW" ||
+		direction === "WSW" ||
+		direction === "NW" ||
+		direction === "NNW"
+	) {
+		near = {
+			latitude: a.latitude,
+			longitude: destinationCoordinates.longitude,
+		};
+	} else {
+		near = {
+			latitude: destinationCoordinates.latitude,
+			longitude: a.longitude,
+		};
+	}
 
-	// Get behind the far/b point
-	const behind = computeDestinationPoint(b, 0.1, bearing);
-	const destination = computeDestinationPoint(behind, h, forward);
-
-	return { near: destination, far: behind };
+	far = b;
+	return { near, far };
 };
 
 export { getEitherPolygonSide };

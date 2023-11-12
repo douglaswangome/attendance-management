@@ -1,102 +1,95 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Field from "../components/Field";
-import Button from "../components/Button";
-import { BsBoxArrowInRight, BsEyeFill, BsPersonCircle } from "react-icons/bs";
-import notify from "../util/notify";
-import { useDispatch } from "react-redux";
-import { updateLocation, updateUser } from "../store/slice";
+import Field from "../components/Field"; // Component
+import Button from "../components/Button"; // Component
+import notify from "../util/notify"; // Component
+import {
+	BsBoxArrowInRight,
+	BsEyeFill,
+	BsEyeSlashFill,
+	BsPersonCircle,
+} from "react-icons/bs"; // Icons
+import {
+	signInWithEmailAndPassword,
+	setPersistence,
+	browserSessionPersistence,
+} from "firebase/auth"; // Firebase auth method
+import { auth } from "../util/firebase"; // Firebase auth
 
 interface LoginCredentials {
 	username: string;
+	email: string;
 	password: string;
 }
 
 const Login: React.FC = () => {
-	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	// Is Admin Flag
-	const [isAdmin, setIsAdmin] = useState<boolean>(true);
-	const handleIsAdmin = () => {
-		setIsAdmin(!isAdmin);
-	};
+	const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
 	// Credentials
 	const [credentials, setCredentials] = useState<LoginCredentials>({
 		username: "",
+		email: "",
 		password: "",
 	});
 
 	const handleUpdateCredentials = (
 		event: React.ChangeEvent<HTMLInputElement>
-	) => {
+	): void => {
 		const { name, value } = event.target;
 		setCredentials({ ...credentials, [name]: value });
 	};
 
+	const handleOnParentBlur = (): void => {
+		if (credentials.username.split("-").length === 1) {
+			setIsAdmin(true);
+			setCredentials((prevCredentials) => {
+				return {
+					...prevCredentials,
+					email: `${credentials.username}@mksu.ac.ke`,
+				};
+			});
+		} else {
+			setIsAdmin(false);
+			setCredentials((prevCredentials) => {
+				return {
+					...prevCredentials,
+					email: `${credentials.username}@student.mksu.ac.ke`,
+				};
+			});
+		}
+	};
+
 	const [showPassword, setShowPassword] = useState<boolean>(false);
-	const handleShowPassword = () => {
+	const handleShowPassword = (): void => {
 		setShowPassword(true);
 		setTimeout(() => setShowPassword(false), 2000);
 	};
 
-	const handleSubmit = () => {
-		if (isAdmin) {
-			// Admin Login
-			notify(200, "Admin Login Successful");
-			dispatch(
-				updateUser({
-					name: "Ms. Veronica",
-					email: "whatever@admin.mksu.ac.ke",
-					role: "admin",
-				})
+	const handleSubmit = async (): Promise<void> => {
+		try {
+			await setPersistence(auth, browserSessionPersistence);
+			await signInWithEmailAndPassword(
+				auth,
+				credentials.email,
+				credentials.password
 			);
-			dispatch(
-				updateLocation({
-					latitude: -1.5309363037953803,
-					longitude: 37.26296276940655,
-				})
+			navigate("/home");
+			notify(
+				200,
+				"Sign In successful. Welcome to Class Machakos Attendance Portal!"
 			);
-		} else {
-			// Student Login
-			notify(200, "Student Login Successful");
-			dispatch(
-				updateUser({
-					name: "John Doe",
-					email: "whatever@student.mksu.ac.ke",
-					role: "student",
-				})
-			);
-			if (credentials.username === "left") {
-				dispatch(
-					updateLocation({
-						latitude: -1.530528563318187,
-						longitude: 37.262435782015395,
-					})
-				);
-			} else {
-				dispatch(
-					updateLocation({
-						latitude: -1.5303257136238086,
-						longitude: 37.26339136048161,
-					})
-				);
-			}
+		} catch (error) {
+			notify(500, "Sign In failed. Please try again!");
 		}
-		navigate("/home");
 	};
 
 	return (
-		<div className="flex flex-col gap-2 p-4 mx-2 w-fit border border-black rounded-lg dark:border-lesser-dark">
+		<div className="flex flex-col gap-2 p-4 mx-2 border border-black rounded-lg w-fit dark:border-lesser-dark">
 			<span className="font-bold">
 				Login to Machakos Attendance Portal | {isAdmin ? "Admin" : "Student"}
 			</span>
-			<div className="flex gap-1">
-				<span className="underline cursor-pointer" onClick={handleIsAdmin}>
-					Click
-				</span>
-				<span>to change role</span>
-			</div>
 			<div className="flex flex-col gap-2">
 				<Field
 					label="username"
@@ -105,10 +98,11 @@ const Login: React.FC = () => {
 					type="text"
 					value={credentials.username}
 					onChange={handleUpdateCredentials}
+					parentOnBlur={handleOnParentBlur}
 				/>
 				<Field
 					label="password"
-					icon={BsEyeFill}
+					icon={showPassword ? BsEyeSlashFill : BsEyeFill}
 					name="password"
 					type={showPassword ? "text" : "password"}
 					value={credentials.password}
