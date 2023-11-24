@@ -5,165 +5,49 @@
 @tailwind utilities;
 
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
 }
 
 :root {
-  font-family: "Mooli";
-  font-size: 18px;
+	font-family: "Mooli";
+	font-size: 18px;
 }
 
-/* React Big Calendar */
-/* Month */
-/* Buttons */
-.rbc-btn-group {
-  display: flex !important;
-  gap: 4px !important;
-}
-.rbc-btn-group button {
-  border-radius: 0 !important;
-  border: none !important;
-  transition: all 0.3s ease-in-out;
-}
-.dark .rbc-btn-group button {
-  color: white !important;
+/* Fullcalendar */
+.fc .fc-button-primary {
+	background-color: #407bff !important;
+	border: none !important;
+	border-radius: 0 !important;
+	margin: 0 1px !important;
+	height: 41px !important;
+	text-transform: capitalize !important;
 }
 
-.rbc-btn-group button:hover,
-.rbc-btn-group button:focus,
-.rbc-btn-group button.rbc-active {
-  background-color: #407bff !important;
-  color: white !important;
-}
-
-/* Border colors */
-.dark .rbc-month-view {
-  border-color: #727272 !important;
-}
-.dark .rbc-month-view .rbc-row .rbc-header {
-  border-color: #727272 !important;
-}
-.dark .rbc-month-view .rbc-month-row {
-  border-color: #727272 !important;
-}
-.dark .rbc-month-view .rbc-month-row .rbc-row-bg .rbc-day-bg {
-  border-color: #727272 !important;
-}
-.dark .rbc-month-view .rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell {
-  color: white !important;
-}
-
-/* Current date */
-.rbc-month-view
-  .rbc-month-row
-  .rbc-row-content
-  .rbc-row
-  .rbc-date-cell.rbc-now {
-  color: #407bff !important;
-}
-
-/* Font size */
-.rbc-month-view
-  .rbc-month-row
-  .rbc-row-content
-  .rbc-row
-  .rbc-row-segment
-  .rbc-event {
-  font-size: 13px !important;
-}
-
-/* Background */
-.rbc-month-view .rbc-month-row .rbc-row-bg .rbc-day-bg.rbc-today,
-.rbc-month-view .rbc-month-row .rbc-row-bg .rbc-day-bg.rbc-off-range-bg {
-  background-color: transparent !important;
-}
-.dark .rbc-month-view .rbc-month-row .rbc-row-bg .rbc-day-bg.rbc-today {
-  background-color: #212121 !important;
-}
-.dark .rbc-month-view .rbc-month-row .rbc-row-bg .rbc-day-bg.rbc-off-range-bg {
-  background-color: #424242 !important;
-}
-
-/* Weeks */
-/* Background */
-.rbc-time-view
-  .rbc-time-header
-  .rbc-time-header-content
-  .rbc-time-header-cell
-  .rbc-header.rbc-today,
-.rbc-time-view
-  .rbc-time-header
-  .rbc-time-header-content
-  .rbc-allday-cell
-  .rbc-row-bg
-  .rbc-day-bg.rbc-today,
-.rbc-time-view .rbc-time-content .rbc-day-slot.rbc-time-column.rbc-today {
-  background-color: white !important;
-}
-.dark
-  .rbc-time-view
-  .rbc-time-header
-  .rbc-time-header-content
-  .rbc-time-header-cell
-  .rbc-header.rbc-today,
-.dark
-  .rbc-time-view
-  .rbc-time-header
-  .rbc-time-header-content
-  .rbc-allday-cell
-  .rbc-row-bg
-  .rbc-day-bg.rbc-today,
-.dark .rbc-time-view .rbc-time-content .rbc-day-slot.rbc-time-column.rbc-today {
-  background-color: #212121 !important;
-}
-/* Border */
-.rbc-events-container {
-  margin-right: 0;
-}
-.dark .rbc-day-slot .rbc-time-slot {
-  border-color: #727272 !important;
-}
-
-.rbc-event {
-  width: 100% !important;
-}
-
-.rbc-events-container {
-  margin: 0 !important;
-}
-
-.rbc-event .rbc-event-content {
-  font-size: 14px !important;
-  text-transform: capitalize !important;
-}
-
-@media only screen and (max-width: 425px) {
-  :root {
-    font-size: 16px;
-  }
+.fc .fc-button-primary:focus {
+	outline: none !important;
 }
 
 /* Loader */
 .spinner {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: radial-gradient(farthest-side, #407bff 94%, #0000) top/3.8px 3.8px
-      no-repeat,
-    conic-gradient(#0000 30%, #407bff);
-  mask: radial-gradient(farthest-side, #0000 calc(100% - 3.8px), #000 0);
-  -webkit-mask: radial-gradient(
-    farthest-side,
-    #0000 calc(100% - 3.8px),
-    #000 0
-  );
-  animation: spinner 1.4s infinite linear;
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	background: radial-gradient(farthest-side, #407bff 94%, #0000) top/3.8px 3.8px
+			no-repeat,
+		conic-gradient(#0000 30%, #407bff);
+	mask: radial-gradient(farthest-side, #0000 calc(100% - 3.8px), #000 0);
+	-webkit-mask: radial-gradient(
+		farthest-side,
+		#0000 calc(100% - 3.8px),
+		#000 0
+	);
+	animation: spinner 1.4s infinite linear;
 }
 
 @keyframes spinner {
-  100% {
-    transform: rotate(1turn);
-  }
+	100% {
+		transform: rotate(1turn);
+	}
 }
