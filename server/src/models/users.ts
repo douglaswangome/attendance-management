@@ -3,6 +3,7 @@ import { ObjectId, Collection } from "mongodb";
 import { client } from "../config/mongo";
 import dotenv from "dotenv";
 dotenv.config({ path: "../.env" });
+import { Semester } from "../utils/types";
 
 const USERSCOLLECTION: string = "users";
 
@@ -12,6 +13,9 @@ interface User {
 	username: string;
 	email: { address: string; verified: boolean };
 	role: string;
+	name?: string;
+	department?: string;
+	school?: string;
 }
 
 // Connect to MongoDB, users collection
@@ -44,20 +48,20 @@ const addUser = async (res: Response, user: User): Promise<void> => {
 		const collection = await connectToUsers();
 
 		if (collection === undefined) {
-			res.status(404).json({ message: "Collection not found" });
+			res.status(404).send("Collection not found");
 			throw new Error("Could not connect to the collection");
 		}
 
 		const userExists = await collection.findOne({ email: user.email });
 		if (userExists) {
-			res.status(400).json({ message: "User already exists!" });
+			res.status(400).send("User already exists!");
 			throw new Error("User already exists!");
 		}
 
 		collection.insertOne(user);
-		res.status(200).json({ message: "User added successfully!" });
+		res.status(200).json("User added successfully!");
 	} catch (error) {
-		res.status(500).json({ message: "Error adding user, try again later!" });
+		res.status(500).send("Error adding user, try again later!");
 	}
 };
 
@@ -75,13 +79,63 @@ const getUser = async (res: Response, username: string): Promise<void> => {
 		if (user) {
 			res.status(200).json(user);
 		} else {
-			res.status(404).json({ message: "User not found!" });
+			res.status(404).send("User not found!");
 			throw new Error("User not found!");
 		}
 	} catch (error) {
-		res.status(500).json({ message: "Error getting user, try again later!" });
+		res.status(500).send("Error getting user, try again later!");
+	}
+};
+
+// Get a lecturer name
+const getLecturerName = async (res: Response, id: string): Promise<void> => {
+	try {
+		const collection = await connectToUsers();
+
+		if (collection === undefined) {
+			res.status(404).json({ message: "Collection not found" });
+			throw new Error("Could not connect to the collection");
+		}
+
+		const lecturer = await collection.findOne({ _id: new ObjectId(id) });
+		if (lecturer) {
+			res.status(200).send(lecturer.name);
+		} else {
+			res.status(404).send("Lecturer not found!");
+			throw new Error("Lecturer not found!");
+		}
+	} catch (error) {
+		res.status(500).send("Error getting lecturer, try again later!");
+	}
+};
+
+// Get students
+const getStudents = async (res: Response, year: string, period: string) => {
+	try {
+		const collection = await connectToUsers();
+
+		if (collection === undefined) {
+			res.status(404).json({ message: "Collection not found" });
+			throw new Error("Could not connect to the collection");
+		}
+
+		const students = await collection
+			.find({
+				role: "student",
+				"semester.year": year,
+				"semester.period": period,
+			})
+			.toArray();
+		if (students) {
+			res.status(200).json(students);
+		} else {
+			res.status(404).send("Students not found!");
+			throw new Error("Students not found!");
+		}
+	} catch (error) {
+		console.log(error);
 	}
 };
 
 // Export functions
-export { addUser, getUser };
+export { addUser, getUser, getStudents, getLecturerName };

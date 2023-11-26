@@ -13,7 +13,7 @@ const Profile = lazy(() => import("../pages/Profile"));
 const AuthLayout = () => {
 	return (
 		<div className="transition-colors ease-linear dark:bg-dark dark:text-white">
-			<div className="flex items-center justify-center flex-shrink-0 min-h-screen">
+			<div className="flex items-center justify-center flex-shrink-0 h-screen">
 				<Outlet />
 			</div>
 		</div>
@@ -22,9 +22,9 @@ const AuthLayout = () => {
 
 const MainLayout = () => {
 	return (
-		<div className="flex flex-col pb-4 dark:bg-dark dark:text-white">
+		<div className="flex flex-col pb-4 dark:bg-dark dark:text-white min-h-screen">
 			<Header />
-			<div className="flex items-center justify-center flex-shrink-0 w-screenn">
+			<div className="flex items-center justify-center flex-shrink-0 h-[calc(100%-72px)] ">
 				<Outlet />
 			</div>
 		</div>

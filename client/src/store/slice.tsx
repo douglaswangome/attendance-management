@@ -28,6 +28,7 @@ export const initialState: InitialState = {
 		room: "",
 		code: "",
 		date: { start: "", end: "" },
+		semester: { year: "", period: "" },
 	},
 	studentModal: {
 		modal: { show: false, message: "" },
@@ -42,8 +43,8 @@ export const slice = createSlice({
 	reducers: {
 		// Class Handling
 		updateClass: (state, action) => {
-			const { lecturer, room, date, code } = action.payload;
-			state.classDetails = { lecturer, room, date, code };
+			const { lecturer, room, date, code, semester } = action.payload;
+			state.classDetails = { lecturer, room, date, code, semester };
 		},
 		removeClass: (state) => {
 			state.classDetails = {
@@ -51,6 +52,7 @@ export const slice = createSlice({
 				room: "",
 				code: "",
 				date: { start: "", end: "" },
+				semester: { year: "", period: "" },
 			};
 		},
 		// Location Handling

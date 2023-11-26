@@ -1,46 +1,24 @@
 import { Response } from "express";
-import { Collection } from "mongodb";
+import { Collection, Db, Document } from "mongodb";
 import { client } from "../config/mongo";
-
-// Attendance interface
-interface Attendance {
-	username: string;
-	present: boolean;
-	latitude: number;
-	longitude: number;
-}
-interface ClassDetails {
-	room: string | "online";
-	code: string;
-	lecturer: string;
-	date: { start: string; end: string };
-}
+import { Attendance } from "../utils/types";
 
 // Connect to MongoDB, "moment instance" collection
 const connectToAttendance = async (
 	unit: string,
-	dayAndTime: string
+	moment: string
 ): Promise<Collection<Attendance> | undefined> => {
 	try {
 		await client.connect();
-		const db = client.db(unit);
+		const db: Db | undefined = client.db(unit);
 		let collection: Collection<Attendance> | undefined;
 
 		if (db) {
-			const existingCollection = await db
-				.listCollections({ name: dayAndTime })
-				.toArray();
-
-			if (existingCollection.length > 0) {
-				collection = db.collection(dayAndTime);
-			} else {
-				collection = await db.createCollection(dayAndTime);
-			}
+			collection = db.collection(moment);
 
 			if (collection === undefined) {
-				throw new Error(`Could not connect to the ${dayAndTime} collection`);
+				throw new Error(`Could not connect to the ${moment} collection`);
 			}
-
 			return collection;
 		} else {
 			throw new Error("Could not connect to the database");
@@ -50,80 +28,94 @@ const connectToAttendance = async (
 	}
 };
 
-// Add an attendance
-const addAttendance = async (
+// Create an attendance record
+const createCollection = async (
 	res: Response,
-	attendance: Attendance,
 	unit: string,
-	dayAndTime: string
+	moment: string
 ): Promise<void> => {
 	try {
-		const collection = await connectToAttendance(unit, dayAndTime);
+		await client.connect();
+		const db: Db | undefined = client.db(unit);
+
+		if (!db) {
+			res.status(500).send("Unable to connect to database");
+			return;
+		}
+		const existingCollections = await db.listCollections().toArray();
+		if (existingCollections.find((collection) => collection.name === moment)) {
+			res.status(400).send("Attendance sheet already exists");
+			return;
+		}
+		const collection: Collection<Attendance> = await db.createCollection(
+			moment
+		);
+		if (!collection) {
+			res.status(500).send("Unable to create attendance sheet");
+		} else {
+			res.status(200).send("Attendance sheet created successfully");
+		}
+	} catch (error) {
+		res.status(500).send("Error creating attendance sheet");
+		console.log(error);
+	}
+};
+
+// Add an attendance record
+const addAttendance = async (
+	res: Response,
+	unit: string,
+	moment: string,
+	attendance: Attendance
+): Promise<void> => {
+	try {
+		const collection = await connectToAttendance(unit, moment);
 
 		if (collection === undefined) {
 			res.status(404).json({ message: "Collection not found" });
 			throw new Error("Could not connect to the collection");
 		}
 
-		// const attendanceExists = await collection.findOne({
-		// 	latitude: attendance.latitude,
-		// 	longitude: attendance.longitude,
-		// });
-		// if (attendanceExists) {
-		// 	res.status(400).json({ message: "Attendance already exists!" });
-		// 	throw new Error("Attendance already exists!");
-		// }
+		const result = await collection.insertOne(attendance);
 
-		collection.insertOne(attendance);
-		res.status(200).json({ message: "Attendance added successfully!" });
+		if (result.insertedId === undefined) {
+			res.status(500).json({ message: "Attendance not added" });
+			throw new Error("Attendance not added");
+		}
+
+		res.status(200).json({ message: "Attendance added" });
 	} catch (error) {
-		res
-			.status(500)
-			.json({ message: "Error adding attendance, try again later!" });
+		res.status(500).send("Error adding attendance");
+		console.log(error);
 	}
 };
 
-// Get all attendances
-const getAttendances = async (
+// Get an attendance records
+const getAttendance = async (
 	res: Response,
 	unit: string,
-	dayAndTime: string
+	moment: string
 ): Promise<void> => {
 	try {
-		const collection = await connectToAttendance(unit, dayAndTime);
+		const collection = await connectToAttendance(unit, moment);
 
 		if (collection === undefined) {
-			res.status(404).json({ message: "Collection not found" });
+			res.status(404).send("Collection not found");
 			throw new Error("Could not connect to the collection");
 		}
 
 		const attendances = await collection.find().toArray();
-		res.status(200).json({ attendances });
+
+		if (attendances.length === 0) {
+			res.status(404).send("No attendances found");
+			throw new Error("No attendances found");
+		}
+
+		res.status(200).json(attendances);
 	} catch (error) {
-		res
-			.status(500)
-			.json({ message: "Error getting attendances, try again later!" });
+		res.status(500).send("Error getting attendances");
+		console.log(error);
 	}
 };
 
-const getAllAttendances = async (
-	res: Response,
-	unit: string
-): Promise<void> => {
-	try {
-		await client.connect();
-		const db = client.db(unit);
-		const collectionList = await db.listCollections().toArray();
-		const collectionNames = collectionList
-			.map((collection) => collection.name)
-			.sort();
-
-		res.status(200).json(collectionNames);
-	} catch (error) {
-		res
-			.status(500)
-			.json({ message: "Error getting attendances, try again later!" });
-	}
-};
-
-export { addAttendance, getAttendances, getAllAttendances };
+export { createCollection, getAttendance, addAttendance };

@@ -19,6 +19,7 @@ import {
 	sendEmailVerification,
 	signOut,
 } from "firebase/auth";
+import { AxiosError, isAxiosError } from "axios";
 import { api } from "../App";
 import { Credentials, RegisterCredentialsErrors } from "../util/types";
 
@@ -40,6 +41,10 @@ const Register: React.FC = () => {
 	};
 
 	const handleOnParentBlur = (): void => {
+		if (credentials.email.split("@").length !== 2) {
+			return;
+		}
+
 		const role = credentials.email.split("@")[1].split(".")[0];
 
 		if (credentials.email) {
@@ -84,19 +89,30 @@ const Register: React.FC = () => {
 					credentials.password
 				);
 				await sendEmailVerification(user);
-				await api.post("/add_user", {
+				const result = await api.post("/add_user", {
 					user: {
 						username: credentials.username,
 						role: credentials.role,
 						email: { address: user.email, verified: user.emailVerified },
 					},
 				});
+				notify(result.status, result.data);
 				await signOut(auth);
 				navigate("/");
-				notify(200, "Sign Up successful. Please verify your email.");
-			} catch (error) {
-				console.log(error);
-				notify(500, "Sign Up failed. Please try again!");
+			} catch (err) {
+				if (isAxiosError(err)) {
+					const axiosError: AxiosError = err;
+					if (axiosError.response) {
+						notify(
+							axiosError.response.status,
+							axiosError.response.data as string
+						);
+					} else {
+						notify(500, "Something went wrong");
+					}
+				} else {
+					notify(500, "Something went wrong");
+				}
 			}
 		}
 	};

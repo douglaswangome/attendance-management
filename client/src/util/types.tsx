@@ -5,7 +5,16 @@ export interface CustomLinkProps {
 	role?: "admin" | "student" | "";
 }
 
+export interface UnitProps {
+	code: string;
+}
+
 // Pages
+export interface Attendance {
+	username: string;
+	present: boolean;
+	location: Point;
+}
 export interface Credentials {
 	username: string;
 	role?: string;
@@ -32,6 +41,7 @@ export interface ClassDetails {
 	room: string | "online";
 	code: string;
 	date: { start: string; end: string };
+	semester: { year: string; period: string };
 }
 
 export interface Point {
@@ -58,7 +68,7 @@ export interface StudentModal {
 export interface Unit {
 	code: string;
 	title: string;
-	lecturer: string;
+	lecturerID: string;
 	semester: { year: string; period: string };
 	school: string;
 	department: string;

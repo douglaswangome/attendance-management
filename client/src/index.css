@@ -23,15 +23,14 @@
 	margin: 0 1px !important;
 	height: 41px !important;
 	text-transform: capitalize !important;
-}
-
-.fc .fc-button-primary:hover {
-	transform: scale(0.98);
-	transition: scale 0.2s ease-in-out;
+	box-shadow: none !important;
 }
 
 .fc .fc-button-primary:focus {
-	outline: none !important;
+	border: 1px solid #407bff !important;
+	background-color: transparent !important;
+	color: #407bff !important;
+	transition: all 0.2s ease-in-out;
 }
 
 /* Loader */

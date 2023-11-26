@@ -3,19 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import ThemeToggle from "./ThemeToggle";
 import { useSelector } from "react-redux";
 import { InitialState } from "../util/types";
-import { auth } from "../util/firebase";
-import { signOut } from "firebase/auth";
 import CustomLink from "./CustomLink";
 import notify from "../util/notify";
 
 const Header: React.FC = () => {
 	const navigate = useNavigate();
 	const { user } = useSelector((state: { slice: InitialState }) => state.slice);
-
-	const handleSignOut = (): void => {
-		signOut(auth);
-		navigate("/");
-	};
 
 	useEffect(() => {
 		if (!user.hasOwnProperty("department") || !user.hasOwnProperty("school")) {

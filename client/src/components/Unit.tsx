@@ -2,10 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Progress } from "@material-tailwind/react";
 import { BsCheckCircle, BsXCircle } from "react-icons/bs";
 import { api } from "../App";
-
-interface UnitProps {
-	code: string;
-}
+import { UnitProps } from "../util/types";
 
 const Unit: React.FC<UnitProps> = (props) => {
 	const [classes, setClasses] = useState<string[]>([]);
@@ -15,7 +12,7 @@ const Unit: React.FC<UnitProps> = (props) => {
 			if (props.code === "sco 306") {
 				try {
 					const classes = await api.post("/get_all_attendance", {
-						unit: `${props.code.toUpperCase().split(" ").join("")}`,
+						unit: `${props.code.replace(" ", "").toUpperCase()}`,
 					});
 					setClasses(classes.data);
 				} catch (error) {
@@ -42,9 +39,7 @@ const Unit: React.FC<UnitProps> = (props) => {
 			</Progress>
 			<div className="flex flex-col">
 				{classes.map((custom, index) => (
-					<div className="flex flex-col p-1 gap-1" key={index}>
-						
-					</div>
+					<div className="flex flex-col p-1 gap-1" key={index}></div>
 				))}
 				<div className="flex items-center p-1 gap-1">
 					Day 1 2023/11/24

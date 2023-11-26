@@ -7,7 +7,7 @@ export default withMT({
 	theme: {
 		extend: {
 			boxShadow: {
-				round: "0 0 12px ",
+				round: "0 0 4px ",
 			},
 			colors: {
 				// Primary

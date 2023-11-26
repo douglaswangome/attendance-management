@@ -6,14 +6,14 @@ import http from "http";
 import { Server } from "socket.io";
 import dotenv from "dotenv";
 dotenv.config();
-import { addUser, getUser } from "./models/users";
-import {
-	addAttendance,
-	getAllAttendances,
-	getAttendances,
-} from "./models/attendance";
+import { addUser, getUser, getStudents, getLecturerName } from "./models/users";
 import { getUnits } from "./models/units";
 import { addTimetable, getTimetable } from "./models/timetable";
+import {
+	addAttendance,
+	createCollection,
+	getAttendance,
+} from "./models/attendance";
 
 const app: Express = express();
 app.use(bodyParser.json());
@@ -58,16 +58,13 @@ app.post("/api/add_user", (req: Request, res: Response) =>
 app.get("/api/get_user", (req: Request, res: Response) =>
 	getUser(res, req.query.username as string)
 );
-// // Attendance
-app.post("/api/add_attendance", (req: Request, res: Response) =>
-	addAttendance(res, req.body.attendance, req.body.unit, req.body.dayAndTime)
+app.get("/api/get_students", (req: Request, res: Response) =>
+	getStudents(res, req.query.year as string, req.query.period as string)
 );
-app.get("/api/get_attendance", (req: Request, res: Response) =>
-	getAttendances(res, req.query.unit as string, req.query.dayAndTime as string)
+app.get("/api/get_lecturer_name", (req: Request, res: Response) =>
+	getLecturerName(res, req.query.id as string)
 );
-app.post("/api/get_all_attendance", (req: Request, res: Response) =>
-	getAllAttendances(res, req.body.unit)
-);
+
 // // Units
 app.get("/api/get_units", (req: Request, res: Response) =>
 	getUnits(
@@ -77,6 +74,7 @@ app.get("/api/get_units", (req: Request, res: Response) =>
 		req.query.second as string
 	)
 );
+
 // // Timetable
 app.post("/api/add_timetable", (req: Request, res: Response) =>
 	addTimetable(res, req.body.timetable)
@@ -90,6 +88,17 @@ app.get("/api/get_timetable", (req: Request, res: Response) =>
 		req.query.third as string,
 		req.query.fourth as string
 	)
+);
+
+// // Attendance
+app.post("/api/create_attendance_collection", (req: Request, res: Response) =>
+	createCollection(res, req.body.code, req.body.moment)
+);
+app.post("/api/add_attendance", (req: Request, res: Response) =>
+	addAttendance(res, req.body.unit, req.body.moment, req.body.attendances)
+);
+app.get("/api/get_attendance", (req: Request, res: Response) =>
+	getAttendance(res, req.query.unit as string, req.query.moment as string)
 );
 
 server.listen(process.env.PORT, (): void => {

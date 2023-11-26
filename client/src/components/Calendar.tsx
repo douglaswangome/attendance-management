@@ -11,7 +11,8 @@ import { useNavigate } from "react-router-dom";
 import notify from "../util/notify";
 import { useDispatch } from "react-redux";
 import { updateClass } from "../store/slice";
-import { socket } from "../App";
+import { AxiosError, isAxiosError } from "axios";
+import { api, socket } from "../App";
 import { useSelector } from "react-redux";
 
 const Calendar: React.FC = () => {
@@ -22,7 +23,7 @@ const Calendar: React.FC = () => {
 	);
 	const [events, setEvents] = useState<EventInput[]>([]);
 
-	const handleEventDrop = (event: EventDropArg) => {
+	const handleEventDrop = (event: EventDropArg): void => {
 		const day = event.event.start?.getDay();
 		if (day === 0 || day === 6) {
 			event.revert();
@@ -30,8 +31,63 @@ const Calendar: React.FC = () => {
 		}
 	};
 
-	const handleEventClick = (event: EventClickArg) => {
-		console.log(event.event.id);
+	const handleEventClick = async (event: EventClickArg): Promise<void> => {
+		const isToday =
+			timetable[parseInt(event.event.id)].date.start.toString().slice(0, 8) ===
+			moment().format("YYYYMMDD");
+		dispatch(updateClass(timetable[parseInt(event.event.id)]));
+		try {
+			if (user.role === "admin") {
+				if (user._id === timetable[parseInt(event.event.id)].lecturerID) {
+					const result = await api.post("/create_attendance_collection", {
+						code: timetable[parseInt(event.event.id)].code
+							.replace(" ", "")
+							.toUpperCase(),
+						moment: timetable[parseInt(event.event.id)].date.start.toString(),
+					});
+					notify(200, result.data);
+					dispatch(updateClass(timetable[parseInt(event.event.id)]));
+					navigate(
+						`/class/${timetable[parseInt(event.event.id)].code}/${
+							timetable[parseInt(event.event.id)].date.start
+						}`
+					);
+					if (isToday) {
+						socket.emit(
+							"join_class",
+							timetable[parseInt(event.event.id)].code
+								.replace(" ", "")
+								.toUpperCase()
+						);
+					}
+				} else {
+					notify(500, "You can't edit/view this class");
+				}
+			} else {
+				notify(500, "You can't edit/view this class");
+			}
+		} catch (err) {
+			if (isAxiosError(err)) {
+				const axiosError: AxiosError = err;
+				if (axiosError.response) {
+					if (axiosError.response.status === 400) {
+						navigate(
+							`/class/${timetable[parseInt(event.event.id)].code}/${
+								timetable[parseInt(event.event.id)].date.start
+							}`
+						);
+						notify("", axiosError.response.data as string);
+					} else {
+						notify(
+							axiosError.response.status,
+							axiosError.response.data as string
+						);
+					}
+				} else {
+					notify(500, "Something went wrong");
+				}
+			}
+		}
 	};
 
 	useEffect(() => {
@@ -75,7 +131,7 @@ const Calendar: React.FC = () => {
 				eventOverlap={false}
 				businessHours={{
 					daysOfWeek: [1, 2, 3, 4, 5],
-					startTime: "07:00",
+					startTime: "06:30",
 					endTime: "19:00",
 				}}
 			/>

@@ -14,10 +14,11 @@ import {
 } from "./store/slice";
 import { Timetable, Unit } from "./util/types";
 import { io } from "socket.io-client";
-import axios from "axios";
+import axios, { AxiosError, isAxiosError } from "axios";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./util/firebase";
 
+const Loading = React.lazy(() => import("./pages/Loading"));
 export const api = axios.create({ baseURL: "http://localhost:3000/api" });
 export const socket = io("http://localhost:3000");
 
@@ -84,43 +85,60 @@ const App: React.FC = () => {
 			auth,
 			async (user): Promise<void> => {
 				if (user) {
-					try {
-						const userResult = await api.get(
-							`/get_user/?username=${user.email
-								?.split("@")[0]
-								.replace(".", "%2E")}`
-						);
-						dispatch(updateUser(userResult.data));
+					if (user.metadata.creationTime !== user.metadata.lastSignInTime) {
+						try {
+							const userResult = await api.get(
+								`/get_user/?username=${user.email
+									?.split("@")[0]
+									.replace(".", "%2E")}`
+							);
+							dispatch(updateUser(userResult.data));
 
-						let units: Unit[] = [];
-						let timetable: Timetable[] = [];
-						if (userResult.data.role === "admin") {
-							const unitsResult = await api.get(
-								`/get_units/?role=admin&first=${userResult.data.school}&second=${userResult.data.department}`
-							);
-							const timetableResult = await api.get(
-								`/get_timetable/?role=admin&first=${userResult.data.school}&second=${userResult.data.department}`
-							);
+							let units: Unit[] = [];
+							let timetable: Timetable[] = [];
+							if (userResult.data.role === "admin") {
+								const unitsResult = await api.get(
+									`/get_units/?role=admin&first=${userResult.data.school}&second=${userResult.data.department}`
+								);
+								const timetableResult = await api.get(
+									`/get_timetable/?role=admin&first=${userResult.data.school}&second=${userResult.data.department}`
+								);
 
-							units = unitsResult.data;
-							timetable = timetableResult.data;
-						} else if (userResult.data.role === "student") {
-							const unitsResult = await api.get(
-								`/get_units/?role=student&first=${userResult.data.student.year}&second=${userResult.data.student.period}`
-							);
-							const timetableResult = await api.get(
-								`/get_timetable/?role=student&first=${userResult.data.school}&second=${userResult.data.department}&third=${userResult.data.student.year}&fourth=${userResult.data.student.period}`
-							);
-							units = unitsResult.data;
-							timetable = timetableResult.data;
+								units = unitsResult.data;
+								timetable = timetableResult.data;
+							} else if (userResult.data.role === "student") {
+								const unitsResult = await api.get(
+									`/get_units/?role=student&first=${userResult.data.student.year}&second=${userResult.data.student.period}`
+								);
+								const timetableResult = await api.get(
+									`/get_timetable/?role=student&first=${userResult.data.school}&second=${userResult.data.department}&third=${userResult.data.student.year}&fourth=${userResult.data.student.period}`
+								);
+								units = unitsResult.data;
+								timetable = timetableResult.data;
+							}
+
+							dispatch(updateUnits({ units }));
+							dispatch(updateTimetable({ timetable }));
+						} catch (error) {
+							if (isAxiosError(error)) {
+								const axiosError: AxiosError = error;
+								if (axiosError.response) {
+									if (axiosError.response.status === 400) {
+										notify("", axiosError.response.data as string);
+									} else {
+										notify(
+											axiosError.response.status,
+											axiosError.response.data as string
+										);
+									}
+								} else {
+									notify(500, "Something went wrong");
+								}
+							} else {
+								notify(500, "Something went wrong");
+							}
+							removeUser();
 						}
-
-						dispatch(updateUnits({ units }));
-						dispatch(updateTimetable({ timetable }));
-					} catch (error) {
-						console.log(error);
-						dispatch(removeUser());
-						notify(500, "Failed to fetch user details");
 					}
 				} else {
 					dispatch(removeUser());
@@ -134,7 +152,7 @@ const App: React.FC = () => {
 	}, []);
 
 	return (
-		<Suspense fallback={<div>Loading...</div>}>
+		<Suspense fallback={<Loading />}>
 			<Toaster
 				toastOptions={{
 					className:
