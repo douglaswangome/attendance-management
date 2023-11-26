@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; // React Router
-import Field from "../components/Field"; // Component
-import Button from "../components/Button"; // Component
-import notify from "../util/notify"; // Component
+import { Link, useNavigate } from "react-router-dom";
+import Field from "../components/Field";
+import Button from "../components/Button";
+import notify from "../util/notify";
 import {
 	BsBoxArrowInRight,
 	BsCheckCircle,
@@ -11,27 +11,21 @@ import {
 	BsPersonCircle,
 	BsPersonBadge,
 	BsXCircle,
-} from "react-icons/bs"; // Icons
-import usePasswordCheck from "../util/hooks/usePasswordCheck"; // Custom hook to check password strength
-import { auth } from "../util/firebase"; // Firebase auth
+} from "react-icons/bs";
+import usePasswordCheck from "../util/hooks/usePasswordCheck";
+import { auth } from "../util/firebase";
 import {
 	createUserWithEmailAndPassword,
 	sendEmailVerification,
 	signOut,
-} from "firebase/auth"; // Firebase auth method
-import { api } from "../App"; // Axios instance
-
-interface RegisterCredentials {
-	username: string;
-	role: string;
-	email: string;
-	password: string;
-}
+} from "firebase/auth";
+import { api } from "../App";
+import { Credentials, RegisterCredentialsErrors } from "../util/types";
 
 const Register: React.FC = () => {
 	const navigate = useNavigate();
 	// Credentials
-	const [credentials, setCredentials] = useState<RegisterCredentials>({
+	const [credentials, setCredentials] = useState<Credentials>({
 		username: "",
 		role: "",
 		email: "",
@@ -63,15 +57,12 @@ const Register: React.FC = () => {
 		setShowPassword(true);
 		setTimeout(() => setShowPassword(false), 2000);
 	};
-	const [passwordHandling, setPasswordHandling] = useState<{
-		errors: boolean;
-		focus: boolean;
-		match: boolean;
-	}>({
-		errors: true,
-		focus: false,
-		match: false,
-	});
+	const [passwordHandling, setPasswordHandling] =
+		useState<RegisterCredentialsErrors>({
+			errors: true,
+			focus: false,
+			match: false,
+		});
 
 	const handlePasswordFocusHandling = (): void => {
 		setPasswordHandling((prevPasswordHandling) => {
@@ -166,7 +157,7 @@ const Register: React.FC = () => {
 					icon={BsPersonBadge}
 					name="role"
 					type="text"
-					value={credentials.role}
+					value={credentials.role || ""}
 					readOnly
 					placeholder="Do not edit this field"
 				/>

@@ -1,12 +1,12 @@
 import React from "react";
-import MCalendar from "../components/MCalendar";
+import Calendar from "../components/Calendar";
 
 const Home: React.FC = () => {
-  return (
-    <div>
-      <MCalendar />
-    </div>
-  );
+	return (
+		<div>
+			<Calendar />
+		</div>
+	);
 };
 
 export default Home;

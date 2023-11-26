@@ -25,6 +25,11 @@
 	text-transform: capitalize !important;
 }
 
+.fc .fc-button-primary:hover {
+	transform: scale(0.98);
+	transition: scale 0.2s ease-in-out;
+}
+
 .fc .fc-button-primary:focus {
 	outline: none !important;
 }

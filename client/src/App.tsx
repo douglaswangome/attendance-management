@@ -1,23 +1,20 @@
 import React, { Suspense, useEffect } from "react";
-// React Router Dom is a library for handling routes in React
-// Routes is a custom component for handling routes in React
 import { RouterProvider } from "react-router-dom";
 import routes from "./routes/routes";
-// React Hot Toast is a library for handling notifications
-// Notify is a custom function for handling notifications
 import { Toaster } from "react-hot-toast";
 import notify from "./util/notify";
-// Moment is a library for handling time in JS
 import moment from "moment/moment";
-// React Redux is a library for handling state in React
-// Redux Toolkit is a library for handling state in React
 import { useDispatch } from "react-redux";
-import { updateLocation, updateUser, removeUser } from "./store/slice";
-// Socket.io is a library for handling real-time communication
+import {
+	updateLocation,
+	updateUnits,
+	updateTimetable,
+	updateUser,
+	removeUser,
+} from "./store/slice";
+import { Timetable, Unit } from "./util/types";
 import { io } from "socket.io-client";
-// Axios is a library for handling HTTP requests
 import axios from "axios";
-// Firebase is a library for handling authentication
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./util/firebase";
 
@@ -28,6 +25,8 @@ const App: React.FC = () => {
 	const dispatch = useDispatch();
 
 	// Theme and Location Handling
+	// TODO: Add a a way to update location even after the initial fetch
+	// TODO: do not handle location on fifth try
 	useEffect(() => {
 		const handleLocation = (): void => {
 			// Location Handling
@@ -37,6 +36,7 @@ const App: React.FC = () => {
 			};
 			const error = (error: GeolocationPositionError): void => {
 				notify(500, "Failed to fetch location");
+				handleLocation();
 				console.log(error);
 			};
 			const options = {
@@ -48,7 +48,7 @@ const App: React.FC = () => {
 			if (navigator.geolocation) {
 				navigator.permissions.query({ name: "geolocation" }).then((result) => {
 					if (result.state === "granted" || result.state === "prompt") {
-						navigator.geolocation.watchPosition(success, error, options);
+						navigator.geolocation.getCurrentPosition(success, error, options);
 					} else {
 						notify(500, "Please enable location to get your attendance");
 					}
@@ -78,16 +78,45 @@ const App: React.FC = () => {
 		handleTheme();
 	}, []);
 
-	// User Handling
+	// User and Unit Handling
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(
 			auth,
 			async (user): Promise<void> => {
 				if (user) {
 					try {
-						const { data } = await api.get(`/get_user/${user.email}`);
-						const { username, email, role } = data;
-						dispatch(updateUser({ username, email, role }));
+						const userResult = await api.get(
+							`/get_user/?username=${user.email
+								?.split("@")[0]
+								.replace(".", "%2E")}`
+						);
+						dispatch(updateUser(userResult.data));
+
+						let units: Unit[] = [];
+						let timetable: Timetable[] = [];
+						if (userResult.data.role === "admin") {
+							const unitsResult = await api.get(
+								`/get_units/?role=admin&first=${userResult.data.school}&second=${userResult.data.department}`
+							);
+							const timetableResult = await api.get(
+								`/get_timetable/?role=admin&first=${userResult.data.school}&second=${userResult.data.department}`
+							);
+
+							units = unitsResult.data;
+							timetable = timetableResult.data;
+						} else if (userResult.data.role === "student") {
+							const unitsResult = await api.get(
+								`/get_units/?role=student&first=${userResult.data.student.year}&second=${userResult.data.student.period}`
+							);
+							const timetableResult = await api.get(
+								`/get_timetable/?role=student&first=${userResult.data.school}&second=${userResult.data.department}&third=${userResult.data.student.year}&fourth=${userResult.data.student.period}`
+							);
+							units = unitsResult.data;
+							timetable = timetableResult.data;
+						}
+
+						dispatch(updateUnits({ units }));
+						dispatch(updateTimetable({ timetable }));
 					} catch (error) {
 						console.log(error);
 						dispatch(removeUser());

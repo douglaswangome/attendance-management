@@ -1,52 +1,39 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { Point } from "../util/fn/getEitherPolygonSide";
-
-export interface InitialState {
-	classDetails: {
-		currentClass: string;
-		lecturer: string;
-		room: string;
-		unit: string;
-		code: string;
-		date: { start: string; end: string };
-	};
-	location: Point;
-	user: {
-		username: string;
-		email: string;
-		role: string;
-	};
-	student: { modal: { show: boolean; message: string } };
-	polygon: {
-		farRight: Point;
-		farLeft: Point;
-		nearRight: Point;
-		nearLeft: Point;
-	};
-}
+import { InitialState } from "../util/types";
 
 export const initialState: InitialState = {
-	classDetails: {
-		currentClass: "",
-		lecturer: "",
-		room: "",
-		unit: "",
-		code: "",
-		date: { start: "", end: "" },
-	},
-	location: { latitude: 0, longitude: 0 },
 	user: {
+		_id: "",
 		username: "",
-		email: "",
-		role: "",
+		email: { address: "", verified: false },
+		role: "student",
+		student: { year: "", period: "" }, // exclusive to students
+		school: "",
+		department: "",
 	},
-	student: { modal: { show: false, message: "" } },
+	units: [],
+	location: { latitude: 0, longitude: 0 },
 	polygon: {
 		farRight: { latitude: 0, longitude: 0 },
 		farLeft: { latitude: 0, longitude: 0 },
 		nearRight: { latitude: 0, longitude: 0 },
 		nearLeft: { latitude: 0, longitude: 0 },
 	},
+	poly: {
+		doneRight: false,
+		doneLeft: false,
+	},
+	classDetails: {
+		lecturer: "",
+		room: "",
+		code: "",
+		date: { start: "", end: "" },
+	},
+	studentModal: {
+		modal: { show: false, message: "" },
+	},
+	// System Related
+	timetable: [],
 };
 
 export const slice = createSlice({
@@ -55,15 +42,13 @@ export const slice = createSlice({
 	reducers: {
 		// Class Handling
 		updateClass: (state, action) => {
-			const { currentClass, lecturer, room, unit, date, code } = action.payload;
-			state.classDetails = { currentClass, lecturer, room, unit, date, code };
+			const { lecturer, room, date, code } = action.payload;
+			state.classDetails = { lecturer, room, date, code };
 		},
 		removeClass: (state) => {
 			state.classDetails = {
-				currentClass: "",
 				lecturer: "",
 				room: "",
-				unit: "",
 				code: "",
 				date: { start: "", end: "" },
 			};
@@ -75,19 +60,44 @@ export const slice = createSlice({
 		},
 		// User handling
 		updateUser: (state, action) => {
-			const { username, email, role } = action.payload;
-			state.user = { username, email, role };
+			const { _id, username, email, role, student, school, department } =
+				action.payload;
+			if (student) {
+				state.user = {
+					_id,
+					username,
+					email,
+					role,
+					student,
+					school,
+					department,
+				};
+			} else {
+				state.user = { _id, username, email, role, school, department };
+			}
 		},
 		removeUser: (state) => {
-			state.user = { username: "", email: "", role: "" };
+			state.user = {
+				_id: "",
+				username: "",
+				email: { address: "", verified: false },
+				role: "student",
+				student: { year: "", period: "" },
+				school: "",
+				department: "",
+			};
 		},
 		// Student handling
 		updateModal: (state, action) => {
 			const { show, message } = action.payload;
-			state.student.modal = { show, message };
+			if (state.studentModal) {
+				state.studentModal.modal = { show, message };
+			}
 		},
 		removeModal: (state) => {
-			state.student.modal = { show: false, message: "" };
+			if (state.studentModal) {
+				state.studentModal.modal = { show: false, message: "" };
+			}
 		},
 		// Polygon handling
 		updatePolygon: (state, action) => {
@@ -97,6 +107,34 @@ export const slice = createSlice({
 		updateWholePolygon: (state, action) => {
 			const { farRight, farLeft, nearRight, nearLeft } = action.payload;
 			state.polygon = { farRight, farLeft, nearRight, nearLeft };
+		},
+		// Poly handling
+		updatePoly: (state, action) => {
+			const { position, done } = action.payload;
+			state.poly = { ...state.poly, [position]: done };
+		},
+		updateWholePoly: (state, action) => {
+			const { doneRight, doneLeft } = action.payload;
+			state.poly = { doneRight, doneLeft };
+		},
+		removePoly: (state) => {
+			state.poly = { doneRight: false, doneLeft: false };
+		},
+		// Unit handling
+		updateUnits: (state, action) => {
+			const { units } = action.payload;
+			state.units = units;
+		},
+		removeUnits: (state) => {
+			state.units = [];
+		},
+		// Timetable handling
+		updateTimetable: (state, action) => {
+			const { timetable } = action.payload;
+			state.timetable = timetable;
+		},
+		removeTimetable: (state) => {
+			state.timetable = [];
 		},
 	},
 });
@@ -111,6 +149,13 @@ export const {
 	removeModal,
 	updatePolygon,
 	updateWholePolygon,
+	updatePoly,
+	updateWholePoly,
+	removePoly,
+	updateUnits,
+	removeUnits,
+	updateTimetable,
+	removeTimetable,
 } = slice.actions;
 
 export default slice.reducer;

@@ -6,6 +6,8 @@ const UserLogin = lazy(() => import("../pages/Login"));
 const UserRegister = lazy(() => import("../pages/Register"));
 const Home = lazy(() => import("../pages/Home"));
 const Class = lazy(() => import("../pages/Class"));
+const History = lazy(() => import("../pages/History"));
+const Profile = lazy(() => import("../pages/Profile"));
 
 // Layouts
 const AuthLayout = () => {
@@ -20,7 +22,7 @@ const AuthLayout = () => {
 
 const MainLayout = () => {
 	return (
-		<div className="flex flex-col min-h-screen dark:bg-dark dark:text-white">
+		<div className="flex flex-col pb-4 dark:bg-dark dark:text-white">
 			<Header />
 			<div className="flex items-center justify-center flex-shrink-0 w-screenn">
 				<Outlet />
@@ -42,6 +44,8 @@ const routes = createBrowserRouter([
 		children: [
 			{ path: "/home", element: <Home /> },
 			{ path: "/class/:code/:date", element: <Class /> },
+			{ path: "/history", element: <History /> },
+			{ path: "/profile/:id", element: <Profile /> },
 		],
 	},
 ]);

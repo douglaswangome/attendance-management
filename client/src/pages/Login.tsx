@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Field from "../components/Field"; // Component
 import Button from "../components/Button"; // Component
@@ -9,18 +9,9 @@ import {
 	BsEyeSlashFill,
 	BsPersonCircle,
 } from "react-icons/bs"; // Icons
-import {
-	signInWithEmailAndPassword,
-	setPersistence,
-	browserSessionPersistence,
-} from "firebase/auth"; // Firebase auth method
+import { signInWithEmailAndPassword } from "firebase/auth"; // Firebase auth method
 import { auth } from "../util/firebase"; // Firebase auth
-
-interface LoginCredentials {
-	username: string;
-	email: string;
-	password: string;
-}
+import { Credentials } from "../util/types"; // Types
 
 const Login: React.FC = () => {
 	const navigate = useNavigate();
@@ -28,7 +19,7 @@ const Login: React.FC = () => {
 	const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
 	// Credentials
-	const [credentials, setCredentials] = useState<LoginCredentials>({
+	const [credentials, setCredentials] = useState<Credentials>({
 		username: "",
 		email: "",
 		password: "",
@@ -47,7 +38,7 @@ const Login: React.FC = () => {
 			setCredentials((prevCredentials) => {
 				return {
 					...prevCredentials,
-					email: `${credentials.username}@mksu.ac.ke`,
+					email: `${credentials.username}@mksu.ac.ke`.toLowerCase(),
 				};
 			});
 		} else {
@@ -55,7 +46,7 @@ const Login: React.FC = () => {
 			setCredentials((prevCredentials) => {
 				return {
 					...prevCredentials,
-					email: `${credentials.username}@student.mksu.ac.ke`,
+					email: `${credentials.username}@student.mksu.ac.ke`.toLowerCase(),
 				};
 			});
 		}
@@ -69,7 +60,6 @@ const Login: React.FC = () => {
 
 	const handleSubmit = async (): Promise<void> => {
 		try {
-			await setPersistence(auth, browserSessionPersistence);
 			await signInWithEmailAndPassword(
 				auth,
 				credentials.email,
@@ -85,9 +75,16 @@ const Login: React.FC = () => {
 		}
 	};
 
+	useEffect(() => {
+		if (auth.currentUser === null) {
+			return;
+		}
+		navigate("/home");
+	}, []);
+
 	return (
 		<div className="flex flex-col gap-2 p-4 mx-2 border border-black rounded-lg w-fit dark:border-lesser-dark">
-			<span className="font-bold">
+			<span className="font-bold" onClick={() => setIsAdmin(!isAdmin)}>
 				Login to Machakos Attendance Portal | {isAdmin ? "Admin" : "Student"}
 			</span>
 			<div className="flex flex-col gap-2">

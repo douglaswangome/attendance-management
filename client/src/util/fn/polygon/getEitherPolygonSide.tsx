@@ -3,11 +3,7 @@ import getCompassDirection from "geolib/es/getCompassDirection";
 import getPreciseDistance from "geolib/es/getPreciseDistance";
 import getDegrees from "./getDegrees";
 import getDirections from "./getDirections";
-
-export interface Point {
-	latitude: number;
-	longitude: number;
-}
+import { Point } from "../../types";
 
 const getEitherPolygonSide = (
 	a: Point,
