@@ -20,3 +20,9 @@ export interface Timetable {
 	date: string;
 	semester: string;
 }
+
+// Returns
+export interface AllAttendance {
+	moment: string;
+	attendances: Attendance[];
+}

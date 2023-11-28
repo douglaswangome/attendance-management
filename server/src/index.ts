@@ -12,6 +12,7 @@ import { addTimetable, getTimetable } from "./models/timetable";
 import {
 	addAttendance,
 	createCollection,
+	getAllAttendance,
 	getAttendance,
 } from "./models/attendance";
 
@@ -99,6 +100,9 @@ app.post("/api/add_attendance", (req: Request, res: Response) =>
 );
 app.get("/api/get_attendance", (req: Request, res: Response) =>
 	getAttendance(res, req.query.unit as string, req.query.moment as string)
+);
+app.get("/api/get_all_attendance", (req: Request, res: Response) =>
+	getAllAttendance(res, req.query.unit as string)
 );
 
 server.listen(process.env.PORT, (): void => {

@@ -1,7 +1,7 @@
 import { Response } from "express";
-import { Collection, Db, Document } from "mongodb";
+import { Collection, Db } from "mongodb";
 import { client } from "../config/mongo";
-import { Attendance } from "../utils/types";
+import { AllAttendance, Attendance } from "../utils/types";
 
 // Connect to MongoDB, "moment instance" collection
 const connectToAttendance = async (
@@ -90,7 +90,7 @@ const addAttendance = async (
 	}
 };
 
-// Get an attendance records
+// Get an attendance record
 const getAttendance = async (
 	res: Response,
 	unit: string,
@@ -118,4 +118,35 @@ const getAttendance = async (
 	}
 };
 
-export { createCollection, getAttendance, addAttendance };
+// Get all attendance records
+const getAllAttendance = async (res: Response, unit: string): Promise<void> => {
+	try {
+		await client.connect();
+		const db: Db | undefined = client.db(unit);
+		const collections = await db.listCollections().toArray();
+		const collectionNames = collections
+			.map((collection) => collection.name)
+			.sort();
+		let attendances: AllAttendance[] = [];
+
+		for (let i = 0; i < collectionNames.length; i++) {
+			const collection = await connectToAttendance(unit, collectionNames[i]);
+			if (collection === undefined) {
+				res.status(404).send("Collection not found");
+				throw new Error("Could not connect to the collection");
+			}
+			const attendance = await collection.find().toArray();
+			if (attendance.length === 0) {
+				res.status(404).send("No attendances found");
+				throw new Error("No attendances found");
+			}
+			attendances.push({ moment: collectionNames[i], attendances: attendance });
+		}
+		res.status(200).json(attendances);
+	} catch (error) {
+		res.status(500).send("Error getting attendances, try again later");
+		console.log(error);
+	}
+};
+
+export { createCollection, getAttendance, getAllAttendance, addAttendance };
