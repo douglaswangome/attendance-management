@@ -6,7 +6,7 @@ const UserLogin = lazy(() => import("../pages/Login"));
 const UserRegister = lazy(() => import("../pages/Register"));
 const Home = lazy(() => import("../pages/Home"));
 const Class = lazy(() => import("../pages/Class"));
-const History = lazy(() => import("../pages/History"));
+const Summary = lazy(() => import("../pages/Summary"));
 const Profile = lazy(() => import("../pages/Profile"));
 
 // Layouts
@@ -44,7 +44,7 @@ const routes = createBrowserRouter([
 		children: [
 			{ path: "/home", element: <Home /> },
 			{ path: "/class/:code/:date", element: <Class /> },
-			{ path: "/history", element: <History /> },
+			{ path: "/history", element: <Summary /> },
 			{ path: "/profile/:id", element: <Profile /> },
 		],
 	},
